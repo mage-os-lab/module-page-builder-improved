@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use MageOS\PageBuilderComponentsExamples\Block\Component\UspList;
+
+/** @var UspList $block */
+/** @var Escaper $escaper */
+
+$items = $block->getItems();
+if (!$items) {
+    return;
+}
+$layout = in_array($block->layout, ['grid', 'list'], true) ? $block->layout : 'row';
+$showIcon = $block->icon === 'check';
+?>
+<section class="mageos-pbc mageos-pbc-usp-list mageos-pbc-usp-list--<?= /* @noEscape fixed value */ $layout ?>">
+    <div class="mageos-pbc__container">
+        <?php if ($block->title !== ''): ?>
+            <h2 class="mageos-pbc-usp-list__title"><?= $escaper->escapeHtml($block->title) ?></h2>
+        <?php endif; ?>
+        <ul class="mageos-pbc-usp-list__items">
+            <?php foreach ($items as $item): ?>
+                <li class="mageos-pbc-usp-list__item">
+                    <?php if ($showIcon): ?>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                             class="mageos-pbc-usp-list__icon" aria-hidden="true">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.58
+                                     l7.3-7.3a1 1 0 0 1 1.4 0Z"/>
+                        </svg>
+                    <?php endif; ?>
+                    <span><?= $escaper->escapeHtml($item) ?></span>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</section>

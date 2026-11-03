@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Modules add their components here: name => block class. Set one to xsi:type="null" to leave it out. -->
+    <type name="MageOS\PageBuilderComponents\Model\ComponentRegistry">
+        <arguments>
+            <argument name="cache" xsi:type="object">Magento\Framework\App\Cache\Type\Config</argument>
+            <argument name="components" xsi:type="array"/>
+        </arguments>
+    </type>
+
+    <!-- Storefront rendering: core's widget filter renders only types it finds as widgets. The components are
+         not added to the lists of widgets (Insert Widget, Content > Widgets). -->
+    <type name="Magento\Widget\Model\Widget">
+        <plugin name="mageos_page_builder_components_add_widget_config"
+                type="MageOS\PageBuilderComponents\Plugin\AddWidgetConfig"/>
+    </type>
+
+    <!-- Page Builder config is read wherever content types are needed, not only in the admin. -->
+    <type name="Magento\PageBuilder\Model\Config\FileResolver">
+        <plugin name="mageos_page_builder_components_add_content_type_files"
+                type="MageOS\PageBuilderComponents\Plugin\AddContentTypeFiles"/>
+    </type>
+
+    <type name="Magento\PageBuilder\Model\Stage\RendererPool">
+        <arguments>
+            <argument name="renderers" xsi:type="array">
+                <item name="mageos_component" xsi:type="object">MageOS\PageBuilderComponents\Model\Stage\ComponentRenderer</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- The stage preview loads Hyvä's stylesheet for a theme under Hyva/, or one it inherits from. Add a Hyvä
+         theme that has no such parent here (theme code => true), as you add it to Hyvä's hyvaBaseThemes. -->
+    <type name="MageOS\PageBuilderComponents\Model\Stage\ComponentRenderer">
+        <arguments>
+            <argument name="hyvaThemes" xsi:type="array"/>
+        </arguments>
+    </type>
+
+    <virtualType name="MageOS\PageBuilderComponents\Model\Config\AppearanceSource"
+                 type="Magento\PageBuilder\Model\Source\VisualSelect">
+        <arguments>
+            <argument name="optionsSize" xsi:type="string">large</argument>
+            <argument name="optionsData" xsi:type="array">
+                <item name="0" xsi:type="array">
+                    <item name="value" xsi:type="string">default</item>
+                    <item name="title" xsi:type="string" translate="true">Default</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>

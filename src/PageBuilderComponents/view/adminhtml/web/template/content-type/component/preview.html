@@ -1,0 +1,21 @@
+<div class="pagebuilder-content-type pagebuilder-mageos-component"
+     event="{ mouseover: onMouseOver, mouseout: onMouseOut }, mouseoverBubble: false">
+    <div attr="data.main.attributes" ko-style="data.main.style" css="data.main.css">
+        <!-- ko if: displayPreview -->
+        <div class="rendered-content" html="previewUnsanitizedHtml" afterRender="watchRenderedContent"></div>
+        <div class="pagebuilder-block-placeholder mageos-pbc-empty-preview" visible="isPreviewEmpty"
+             click="onEmptyPreviewClick">
+            <span class="placeholder-text" text="emptyPreviewText"></span>
+        </div>
+        <!-- /ko -->
+        <!-- ko ifnot: displayPreview -->
+        <div class="pagebuilder-block-placeholder">
+            <span class="placeholder-text" text="placeholderText"></span>
+        </div>
+        <!-- /ko -->
+    </div>
+    <div data-role="spinner" class="admin__data-grid-loading-mask" if="loading">
+        <div class="spinner"><span repeat="8"></span></div>
+    </div>
+    <render args="getOptions().template"></render>
+</div>

@@ -1,0 +1,49 @@
+/*
+ * Layout of Page Builder's "Columns" element, for Luma and Hyvä alike.
+ *
+ * Page Builder writes the settings as custom properties on the column group (data-mageos-layout), once per viewport
+ * inside that viewport's media query (js/converter/style/custom-property and columns-per-line):
+ *   --mageos-column-gap      between the columns of a line;
+ *   --mageos-row-gap         between wrapped or stacked columns, and between lines (default: the column gap);
+ *   --mageos-column-basis    each column's width with "Columns per line", after the gaps; with --mageos-column-wrap;
+ *   --mageos-columns-justify where columns go in a line they don't fill.
+ * Without them, columns are laid out as core and the themes lay them out: the widths set on the stage, one line
+ * from 768px, stacked below.
+ *
+ * Columns with stage widths keep their proportions next to a gap by shrinking (min-width 0, so content can't stop
+ * them).
+ */
+[data-content-type='column-group'][data-mageos-layout] {
+    /* Values of an outer column group don't reach the ones inside its columns. */
+    --mageos-column-gap: initial;
+    --mageos-row-gap: initial;
+    --mageos-column-basis: initial;
+    --mageos-column-wrap: initial;
+    --mageos-columns-justify: initial;
+}
+
+[data-mageos-layout] > [data-content-type='column-line'] {
+    column-gap: var(--mageos-column-gap, 0px);
+    flex-wrap: var(--mageos-column-wrap, nowrap);
+    justify-content: var(--mageos-columns-justify, normal);
+    row-gap: var(--mageos-row-gap, var(--mageos-column-gap, 0px));
+}
+
+[data-mageos-layout] > [data-content-type='column-line'] + [data-content-type='column-line'] {
+    margin-top: var(--mageos-row-gap, var(--mageos-column-gap, 0px));
+}
+
+[data-mageos-layout] > [data-content-type='column-line'] > [data-content-type='column'] {
+    flex: 0 1 var(--mageos-column-basis, auto);
+    min-width: 0;
+}
+
+@media (max-width: 767px) {
+    [data-mageos-layout] > [data-content-type='column-line'] {
+        flex-wrap: var(--mageos-column-wrap, wrap);
+    }
+
+    [data-mageos-layout] > [data-content-type='column-line'] > [data-content-type='column'] {
+        flex-basis: var(--mageos-column-basis, 100%);
+    }
+}

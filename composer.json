@@ -1,0 +1,120 @@
+{
+    "name": "mage-os/module-page-builder-improved",
+    "description": "Page Builder, improved: components declared with PHP attributes and examples, a fresh new editor UI, and layout settings (gaps, flex, grid) with a Tablet view",
+    "keywords": [
+        "magento",
+        "magento2",
+        "mage-os",
+        "page-builder",
+        "pagebuilder",
+        "cms",
+        "hyva"
+    ],
+    "homepage": "https://github.com/mage-os-lab/module-page-builder-improved",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "support": {
+        "issues": "https://github.com/mage-os-lab/module-page-builder-improved/issues",
+        "source": "https://github.com/mage-os-lab/module-page-builder-improved",
+        "security": "https://github.com/mage-os-lab/module-page-builder-improved/security/policy"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "~8.3.0 || ~8.4.0",
+        "magento/framework": "~103.0.8.0",
+        "magento/module-backend": "*",
+        "magento/module-catalog": "*",
+        "magento/module-catalog-widget": "*",
+        "magento/module-cms": "*",
+        "magento/module-email": "*",
+        "magento/module-page-builder": "~2.2.6.0",
+        "magento/module-rule": "*",
+        "magento/module-store": "*",
+        "magento/module-ui": "*",
+        "magento/module-url-rewrite": "*",
+        "magento/module-widget": "*"
+    },
+    "require-dev": {
+        "bitexpert/phpstan-magento": "^0.42",
+        "friendsofphp/php-cs-fixer": "^3.88",
+        "magento/magento-coding-standard": "^40",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.6"
+    },
+    "replace": {
+        "mage-os/module-page-builder-components": "self.version",
+        "mage-os/module-page-builder-components-examples": "self.version",
+        "mage-os/module-page-builder-layout": "self.version",
+        "mage-os/module-page-builder-ui": "self.version"
+    },
+    "autoload": {
+        "files": [
+            "src/PageBuilderComponents/registration.php",
+            "src/PageBuilderComponentsExamples/registration.php",
+            "src/PageBuilderLayout/registration.php",
+            "src/PageBuilderUi/registration.php"
+        ],
+        "psr-4": {
+            "MageOS\\PageBuilderComponents\\": "src/PageBuilderComponents/",
+            "MageOS\\PageBuilderComponentsExamples\\": "src/PageBuilderComponentsExamples/",
+            "MageOS\\PageBuilderLayout\\": "src/PageBuilderLayout/",
+            "MageOS\\PageBuilderUi\\": "src/PageBuilderUi/"
+        },
+        "exclude-from-classmap": [
+            "src/*/Test/"
+        ]
+    },
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/.gitattributes",
+            "/.gitignore",
+            "/.php-cs-fixer.dist.php",
+            "/phpcs.xml.dist",
+            "/phpstan.neon",
+            "/phpunit.xml.dist",
+            "/release-please-config.json",
+            "/.release-please-manifest.json",
+            "/src/*/Test/Js",
+            "/src/*/Test/Screenshots",
+            "/src/*/docs/screenshots"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "magento/composer-dependency-version-audit-plugin": true,
+            "magento/magento-composer-installer": false
+        }
+    },
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://mirror.mage-os.org/"
+        }
+    ],
+    "scripts": {
+        "test:unit": "phpunit -c phpunit.xml.dist",
+        "test:phpstan": "phpstan analyse --memory-limit=1G",
+        "test:cs-fixer": "php-cs-fixer fix --dry-run --diff --allow-risky=yes",
+        "test:phpcs": "phpcs --standard=phpcs.xml.dist",
+        "test:js": [
+            "node src/PageBuilderComponents/Test/Js/codec.test.js",
+            "node src/PageBuilderComponents/Test/Js/provider.test.js vendor/magento/module-rule",
+            "node src/PageBuilderComponents/Test/Js/field-values.test.js",
+            "node src/PageBuilderComponents/Test/Js/preview.test.js",
+            "node src/PageBuilderComponents/Test/Js/widget-directive.test.js vendor/magento/module-page-builder",
+            "node src/PageBuilderUi/Test/Js/panel.test.js vendor/magento/module-page-builder",
+            "node src/PageBuilderLayout/Test/Js/converters.test.js"
+        ],
+        "test": [
+            "@test:unit",
+            "@test:phpstan",
+            "@test:cs-fixer",
+            "@test:phpcs"
+        ]
+    }
+}

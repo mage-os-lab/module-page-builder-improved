@@ -1,0 +1,138 @@
+<!doctype html>
+<!--
+    Browser test of view/adminhtml/web/js/utils/preview-frame.js. Open it in a browser, or run it headless with
+    Test/Js/browser.test.js. It shows "RESULT: OK" when every check passes, otherwise "RESULT: FAIL" with
+    the failed checks.
+
+    It needs real rendering: ResizeObserver only fires on rendering frames, which Chrome's --virtual-time-budget
+    and --dump-dom never produce.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>preview-frame test</title>
+    <script>
+        // Minimal AMD loader for the one module under test.
+        var previewFrame;
+        function define(deps, factory) { previewFrame = factory(); }
+
+        // The module must not watch every DOM change of the admin.
+        var mutationObservers = 0,
+            NativeMutationObserver = window.MutationObserver;
+        window.MutationObserver = function (callback) {
+            mutationObservers++;
+            return new NativeMutationObserver(callback);
+        };
+    </script>
+    <script src="../../view/adminhtml/web/js/utils/preview-frame.js"></script>
+</head>
+<body style="margin:0">
+<div id="stage" style="width:800px"></div>
+<div id="other" style="width:800px"></div>
+<pre id="result">RESULT: PENDING</pre>
+<script>
+    (function () {
+        var failures = [],
+            stage = document.getElementById('stage');
+
+        function check(name, ok, detail) {
+            if (!ok) {
+                failures.push(name + ' (' + detail + ')');
+            }
+        }
+
+        // What ComponentRenderer outputs: a sandboxed iframe (no allow-scripts) with content of a known height,
+        // a top margin that would collapse out of an ordinary body, and scripts that must not run.
+        function previewHtml(height) {
+            var doc = '<!doctype html><html><head></head><body style="margin:0;display:flow-root">'
+                + '<div id="content" style="margin-top:20px;height:' + height + 'px;background:#ccc"></div>'
+                + '<script>document.body.setAttribute("data-script-ran", "1"); parent.scriptRan = true;<\/script>'
+                + '<img src="data:," onerror="parent.scriptRan = true" alt="" style="display:none">'
+                + '</body></html>';
+
+            return '<iframe data-mageos-pbc-preview="" sandbox="allow-same-origin"'
+                + ' style="display:block;width:100%;border:0" srcdoc="'
+                + doc.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></iframe>';
+        }
+
+        previewFrame.watch(document);
+        previewFrame.watch(document); // Twice is harmless.
+        // Counted now: the test runner may use observers of its own later.
+        var observersAfterWatch = mutationObservers;
+
+        // Inserted after the watcher started, as Knockout does when the preview request returns.
+        setTimeout(function () {
+            stage.innerHTML = previewHtml(600);
+            var frame = stage.querySelector('iframe');
+
+            setTimeout(function () {
+                check('fits content after load', frame.style.height === '620px', frame.style.height);
+                check('sandboxed', frame.getAttribute('sandbox') === 'allow-same-origin', frame.getAttribute('sandbox'));
+                check('document readable', !!frame.contentDocument, 'contentDocument is null');
+                check(
+                    'scripts in the preview do not run',
+                    !window.scriptRan && !frame.contentDocument.body.hasAttribute('data-script-ran'),
+                    'a script ran'
+                );
+
+                // The content shrinks: the frame must follow (the old max(body, html) never shrank).
+                frame.contentDocument.getElementById('content').style.height = '300px';
+
+                setTimeout(function () {
+                    check('shrinks with content', frame.style.height === '320px', frame.style.height);
+
+                    // A narrower stage reflows content whose height depends on width.
+                    var content = frame.contentDocument.getElementById('content');
+                    content.style.height = 'auto';
+                    content.style.aspectRatio = '2 / 1';
+                    stage.style.width = '400px';
+
+                    setTimeout(function () {
+                        check('follows width-dependent layout', frame.style.height === '220px', frame.style.height);
+
+                        // A new preview replaces the old one (new document): it is sized too.
+                        stage.innerHTML = previewHtml(150);
+                        var replaced = stage.querySelector('iframe');
+
+                        setTimeout(function () {
+                            check('sizes a replaced preview', replaced.style.height === '170px', replaced.style.height);
+
+                            // Built in a detached element, then inserted, as a template engine may.
+                            var detached = document.createElement('div');
+                            detached.innerHTML = previewHtml(90);
+                            stage.innerHTML = '';
+                            stage.appendChild(detached);
+                            var built = detached.querySelector('iframe');
+
+                            setTimeout(function () {
+                                check('sizes a preview built detached', built.style.height === '110px', built.style.height);
+
+                                // Moved elsewhere (sorting on the stage): the iframe reloads, and is tracked anew.
+                                document.getElementById('other').appendChild(detached);
+
+                                setTimeout(function () {
+                                    check('sizes a moved preview', built.style.height === '110px', built.style.height);
+                                    built.contentDocument.getElementById('content').style.height = '40px';
+
+                                    setTimeout(function () {
+                                        check(
+                                            'follows the moved preview\'s new document',
+                                            built.style.height === '60px',
+                                            built.style.height
+                                        );
+                                        check('no MutationObserver', observersAfterWatch === 0, observersAfterWatch);
+                                        document.getElementById('result').textContent = failures.length
+                                            ? 'RESULT: FAIL ' + failures.join('; ')
+                                            : 'RESULT: OK';
+                                    }, 300);
+                                }, 300);
+                            }, 300);
+                        }, 300);
+                    }, 300);
+                }, 300);
+            }, 500);
+        }, 100);
+    })();
+</script>
+</body>
+</html>

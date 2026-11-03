@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="MageOS\PageBuilderComponents\Model\ComponentRegistry">
+        <arguments>
+            <argument name="components" xsi:type="array">
+                <item name="mageos_hero" xsi:type="string">MageOS\PageBuilderComponentsExamples\Block\Component\Hero</item>
+                <item name="mageos_cards" xsi:type="string">MageOS\PageBuilderComponentsExamples\Block\Component\Cards</item>
+                <item name="mageos_usp_list" xsi:type="string">MageOS\PageBuilderComponentsExamples\Block\Component\UspList</item>
+                <item name="mageos_image_text" xsi:type="string">MageOS\PageBuilderComponentsExamples\Block\Component\ImageText</item>
+                <item name="mageos_call_to_action" xsi:type="string">MageOS\PageBuilderComponentsExamples\Block\Component\CallToAction</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

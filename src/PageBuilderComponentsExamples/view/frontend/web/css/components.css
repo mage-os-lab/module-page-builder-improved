@@ -1,0 +1,541 @@
+/*
+ * The example components' default look: plain CSS, no CSS framework, so it works the same with Luma, Hyvä or any
+ * other theme. The templates use only the module's own classes (mageos-pbc-*, BEM style).
+ *
+ * Theme it with custom properties, e.g. in the theme's CSS:
+ *     :root { --mageos-pbc-primary: #8a5a2b; --mageos-pbc-radius: 0; }
+ *
+ *   --mageos-pbc-primary        buttons, links, eyebrows, icons, the "Primary color" call to action
+ *   --mageos-pbc-on-primary     text on the primary color
+ *   --mageos-pbc-text           text
+ *   --mageos-pbc-muted          secondary text
+ *   --mageos-pbc-surface        light backgrounds (cards' frame, light call to action, hero without an image)
+ *   --mageos-pbc-dark           dark backgrounds
+ *   --mageos-pbc-radius         corners
+ *   --mageos-pbc-max-width      content width
+ *   --mageos-pbc-gutter         space at the content's sides
+ *
+ * Or replace it: remove it in the theme's default_head_blocks.xml
+ * (<remove src="MageOS_PageBuilderComponentsExamples::css/components.css"/>) and style the same classes.
+ *
+ * Default states have a class too, for themes to hook on, but no rule here: the base rules are that state.
+ * Hooks: .mageos-pbc-hero--height-medium .mageos-pbc-hero--position-left .mageos-pbc-hero--dark
+ * .mageos-pbc-cards__list--1 .mageos-pbc-call-to-action--light
+ */
+
+/* Shared */
+
+.mageos-pbc {
+    box-sizing: border-box;
+    color: var(--mageos-pbc-text, #111827);
+    width: 100%;
+}
+
+.mageos-pbc *,
+.mageos-pbc *::before,
+.mageos-pbc *::after {
+    box-sizing: inherit;
+}
+
+.mageos-pbc__container {
+    margin-inline: auto;
+    max-width: var(--mageos-pbc-max-width, 1280px);
+    padding-inline: var(--mageos-pbc-gutter, 1.5rem);
+}
+
+/*
+ * Theme base styles often give headings and paragraphs their own case, margins and sizes. Rules below that set
+ * these on a heading or paragraph start with .mageos-pbc, to outrank this.
+ */
+.mageos-pbc h2,
+.mageos-pbc h3,
+.mageos-pbc p {
+    letter-spacing: normal;
+    margin: 0;
+    text-transform: none;
+}
+
+.mageos-pbc img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+.mageos-pbc__heading {
+    margin: 0 auto 2rem;
+    max-width: 42rem;
+    text-align: center;
+}
+
+.mageos-pbc__title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.mageos-pbc .mageos-pbc__intro {
+    color: var(--mageos-pbc-muted, #4b5563);
+    line-height: 1.6;
+    margin-top: 1rem;
+}
+
+.mageos-pbc .mageos-pbc__eyebrow {
+    font-size: .875rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.mageos-pbc__buttons {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.mageos-pbc__button {
+    border: 2px solid var(--mageos-pbc-primary, #1d4ed8);
+    border-radius: var(--mageos-pbc-radius, .5rem);
+    display: inline-flex;
+    font-weight: 500;
+    line-height: 1.5;
+    padding: .5rem 1rem;
+    text-decoration: none;
+    transition: background-color .15s, color .15s, opacity .15s;
+}
+
+.mageos-pbc__button:hover {
+    text-decoration: none;
+}
+
+.mageos-pbc__button--primary,
+.mageos-pbc__button--primary:visited {
+    background: var(--mageos-pbc-primary, #1d4ed8);
+    color: var(--mageos-pbc-on-primary, #fff);
+}
+
+.mageos-pbc__button--primary:hover {
+    color: var(--mageos-pbc-on-primary, #fff);
+    opacity: .9;
+}
+
+.mageos-pbc__button--secondary,
+.mageos-pbc__button--secondary:visited {
+    background: transparent;
+    color: var(--mageos-pbc-primary, #1d4ed8);
+}
+
+.mageos-pbc__button--secondary:hover {
+    background: var(--mageos-pbc-primary, #1d4ed8);
+    color: var(--mageos-pbc-on-primary, #fff);
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc__title {
+        font-size: 2.25rem;
+    }
+}
+
+/* Hero */
+
+.mageos-pbc-hero {
+    align-items: center;
+    display: flex;
+    min-height: 420px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mageos-pbc-hero--height-small { min-height: 320px; }
+.mageos-pbc-hero--height-screen { min-height: 100vh; }
+
+.mageos-pbc-hero:not(.mageos-pbc-hero--has-image) {
+    background: var(--mageos-pbc-surface, #f3f4f6);
+}
+
+.mageos-pbc-hero--light {
+    color: #fff;
+}
+
+.mageos-pbc-hero--light:not(.mageos-pbc-hero--has-image) {
+    background: var(--mageos-pbc-dark, #111827);
+}
+
+.mageos-pbc .mageos-pbc-hero__image {
+    height: 100%;
+    inset: 0;
+    max-width: none;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+}
+
+.mageos-pbc-hero__overlay {
+    background: linear-gradient(to right, rgb(255 255 255 / .8), transparent);
+    inset: 0;
+    position: absolute;
+}
+
+.mageos-pbc-hero--position-right .mageos-pbc-hero__overlay {
+    background: linear-gradient(to left, rgb(255 255 255 / .8), transparent);
+}
+
+.mageos-pbc-hero--position-center .mageos-pbc-hero__overlay {
+    background: rgb(255 255 255 / .6);
+}
+
+.mageos-pbc-hero--light .mageos-pbc-hero__overlay {
+    background: rgb(0 0 0 / .4);
+}
+
+.mageos-pbc-hero__inner {
+    padding-block: 4rem;
+    position: relative;
+    width: 100%;
+}
+
+.mageos-pbc-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 36rem;
+}
+
+.mageos-pbc-hero--position-center .mageos-pbc-hero__content {
+    align-items: center;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.mageos-pbc-hero--position-right .mageos-pbc-hero__content {
+    align-items: flex-end;
+    margin-left: auto;
+    text-align: right;
+}
+
+.mageos-pbc-hero__title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.mageos-pbc-hero__text {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+.mageos-pbc-hero--light .mageos-pbc__button--primary {
+    background: #fff;
+    border-color: #fff;
+    color: var(--mageos-pbc-dark, #111827);
+}
+
+.mageos-pbc-hero--light .mageos-pbc__button--secondary {
+    border-color: #fff;
+    color: #fff;
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc-hero { min-height: 560px; }
+    .mageos-pbc-hero--height-small { min-height: 320px; }
+    .mageos-pbc-hero--height-large { min-height: 720px; }
+    .mageos-pbc-hero--height-screen { min-height: 100vh; }
+    .mageos-pbc-hero__inner { padding-block: 6rem; }
+    .mageos-pbc-hero__title { font-size: 3rem; }
+}
+
+/* Cards */
+
+.mageos-pbc-cards {
+    padding-block: 2.5rem;
+}
+
+.mageos-pbc-cards__list {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mageos-pbc-cards__card {
+    background: #fff;
+    border: 1px solid rgb(0 0 0 / .08);
+    border-radius: var(--mageos-pbc-radius, .5rem);
+    box-shadow: 0 1px 2px rgb(0 0 0 / .05);
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow .15s;
+}
+
+.mageos-pbc-cards__card--link:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / .1);
+}
+
+.mageos-pbc .mageos-pbc-cards__image {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    width: 100%;
+}
+
+.mageos-pbc-cards__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: .75rem;
+    padding: 1.5rem;
+}
+
+.mageos-pbc-cards__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.mageos-pbc-cards__cover-link,
+.mageos-pbc-cards__cover-link:visited,
+.mageos-pbc-cards__cover-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* The whole card is the link. */
+.mageos-pbc-cards__cover-link::after {
+    content: '';
+    inset: 0;
+    position: absolute;
+}
+
+.mageos-pbc-cards__text {
+    color: var(--mageos-pbc-muted, #4b5563);
+    font-size: .875rem;
+    line-height: 1.6;
+}
+
+.mageos-pbc-cards__link,
+.mageos-pbc-cards__link:visited {
+    color: var(--mageos-pbc-primary, #1d4ed8);
+    font-weight: 600;
+    margin-top: auto;
+    padding-top: .5rem;
+    text-decoration: none;
+}
+
+.mageos-pbc-cards__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+@media (min-width: 640px) {
+    .mageos-pbc-cards__list--2,
+    .mageos-pbc-cards__list--3,
+    .mageos-pbc-cards__list--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc-cards { padding-block: 4rem; }
+    .mageos-pbc-cards .mageos-pbc__heading { margin-bottom: 3rem; }
+}
+
+@media (min-width: 1024px) {
+    .mageos-pbc-cards__list--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mageos-pbc-cards__list--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* USP List */
+
+.mageos-pbc-usp-list {
+    padding-block: 1.5rem;
+}
+
+.mageos-pbc .mageos-pbc-usp-list__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.mageos-pbc-usp-list--list .mageos-pbc-usp-list__title {
+    text-align: left;
+}
+
+.mageos-pbc-usp-list__items {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mageos-pbc-usp-list__item {
+    align-items: center;
+    display: flex;
+    font-weight: 500;
+    gap: .5rem;
+    margin: 0;
+}
+
+.mageos-pbc-usp-list__icon {
+    color: var(--mageos-pbc-primary, #1d4ed8);
+    flex-shrink: 0;
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .mageos-pbc-usp-list--grid .mageos-pbc-usp-list__items {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc-usp-list--row .mageos-pbc-usp-list__items {
+        align-items: center;
+        column-gap: 2.5rem;
+        flex-flow: row wrap;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1024px) {
+    .mageos-pbc-usp-list--grid .mageos-pbc-usp-list__items {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Image & Text */
+
+.mageos-pbc-image-text {
+    padding-block: 2.5rem;
+}
+
+.mageos-pbc-image-text__inner {
+    align-items: center;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.mageos-pbc .mageos-pbc-image-text__image {
+    border-radius: var(--mageos-pbc-radius, .5rem);
+    object-fit: cover;
+    width: 100%;
+}
+
+.mageos-pbc-image-text__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mageos-pbc-image-text .mageos-pbc__eyebrow {
+    color: var(--mageos-pbc-primary, #1d4ed8);
+}
+
+.mageos-pbc-image-text__text {
+    color: var(--mageos-pbc-muted, #374151);
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc-image-text { padding-block: 4rem; }
+
+    .mageos-pbc-image-text__inner {
+        gap: 3rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mageos-pbc-image-text--image-right .mageos-pbc-image-text__media { order: 1; }
+    .mageos-pbc-image-text--no-image .mageos-pbc-image-text__content { grid-column: 1 / -1; }
+}
+
+/* Call to Action */
+
+.mageos-pbc-call-to-action {
+    padding-block: 1.5rem;
+}
+
+.mageos-pbc-call-to-action__box {
+    align-items: center;
+    background: var(--mageos-pbc-surface, #f3f4f6);
+    border-radius: var(--mageos-pbc-radius, .5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+.mageos-pbc-call-to-action--primary .mageos-pbc-call-to-action__box {
+    background: var(--mageos-pbc-primary, #1d4ed8);
+    color: var(--mageos-pbc-on-primary, #fff);
+}
+
+.mageos-pbc-call-to-action--dark .mageos-pbc-call-to-action__box {
+    background: var(--mageos-pbc-dark, #111827);
+    color: #fff;
+}
+
+.mageos-pbc-call-to-action__content {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    max-width: 42rem;
+}
+
+.mageos-pbc-call-to-action__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.mageos-pbc-call-to-action__text {
+    line-height: 1.6;
+    opacity: .9;
+}
+
+.mageos-pbc-call-to-action--center .mageos-pbc__buttons {
+    justify-content: center;
+}
+
+/* On the primary color, the primary button can't be primary colored too: it turns white, the other outlined. */
+.mageos-pbc-call-to-action--primary .mageos-pbc__button--primary {
+    background: var(--mageos-pbc-on-primary, #fff);
+    border-color: var(--mageos-pbc-on-primary, #fff);
+    color: var(--mageos-pbc-primary, #1d4ed8);
+}
+
+.mageos-pbc-call-to-action--primary .mageos-pbc__button--secondary,
+.mageos-pbc-call-to-action--dark .mageos-pbc__button--secondary {
+    border-color: #fff;
+    color: #fff;
+}
+
+.mageos-pbc-call-to-action--primary .mageos-pbc__button--secondary:hover,
+.mageos-pbc-call-to-action--dark .mageos-pbc__button--secondary:hover {
+    background: rgb(255 255 255 / .12);
+}
+
+@media (min-width: 768px) {
+    .mageos-pbc-call-to-action__box { padding-inline: 3rem; }
+    .mageos-pbc-call-to-action__title { font-size: 1.875rem; }
+
+    .mageos-pbc-call-to-action--split .mageos-pbc-call-to-action__box {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .mageos-pbc-call-to-action--split .mageos-pbc__buttons {
+        flex-shrink: 0;
+        margin-top: 0;
+    }
+}

@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use MageOS\PageBuilderComponentsExamples\Block\Component\ImageText;
+
+/** @var ImageText $block */
+/** @var Escaper $escaper */
+
+$buttons = $block->getButtons();
+$imageSize = $block->image !== '' ? $block->getImageSize($block->image) : null;
+$rootClass = implode(' ', array_filter([
+    'mageos-pbc mageos-pbc-image-text',
+    $block->imagePosition === 'right' ? 'mageos-pbc-image-text--image-right' : '',
+    $block->image === '' ? 'mageos-pbc-image-text--no-image' : '',
+]));
+?>
+<section class="<?= /* @noEscape fixed class names */ $rootClass ?>">
+    <div class="mageos-pbc__container mageos-pbc-image-text__inner">
+        <?php if ($block->image !== ''): ?>
+            <div class="mageos-pbc-image-text__media">
+                <img src="<?= $escaper->escapeUrl($block->image) ?>"
+                     alt="<?= $escaper->escapeHtmlAttr($block->imageAlt) ?>"
+                     class="mageos-pbc-image-text__image"
+                     <?php if ($imageSize !== null): ?>
+                         width="<?= (int) $imageSize['width'] ?>" height="<?= (int) $imageSize['height'] ?>"
+                     <?php endif; ?>
+                     loading="lazy"
+                     decoding="async">
+            </div>
+        <?php endif; ?>
+        <div class="mageos-pbc-image-text__content">
+            <?php if ($block->eyebrow !== ''): ?>
+                <p class="mageos-pbc__eyebrow"><?= $escaper->escapeHtml($block->eyebrow) ?></p>
+            <?php endif; ?>
+            <?php if ($block->title !== ''): ?>
+                <h2 class="mageos-pbc__title"><?= $escaper->escapeHtml($block->title) ?></h2>
+            <?php endif; ?>
+            <?php if ($block->content !== ''): ?>
+                <div class="mageos-pbc-image-text__text">
+                    <?= /* @noEscape WYSIWYG HTML, already run through the CMS filter */ $block->content ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($buttons): ?>
+                <div class="mageos-pbc__buttons">
+                    <?php foreach ($buttons as $button): ?>
+                        <a href="<?= $escaper->escapeUrl($button['link']->url) ?>"
+                           class="mageos-pbc__button mageos-pbc__button--primary"
+                           <?= /* @noEscape fixed attribute string */ $button['link']->getTargetAttributes() ?>>
+                            <?= $escaper->escapeHtml($button['text']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>

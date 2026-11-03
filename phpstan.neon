@@ -1,0 +1,25 @@
+includes:
+    - vendor/bitexpert/phpstan-magento/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+parameters:
+    level: 8
+    paths:
+        - src/PageBuilderComponents/Attribute
+        - src/PageBuilderComponents/Block
+        - src/PageBuilderComponents/Exception
+        - src/PageBuilderComponents/Field
+        - src/PageBuilderComponents/Model
+        - src/PageBuilderComponents/Plugin
+        - src/PageBuilderComponents/Test
+        - src/PageBuilderComponentsExamples/Block
+        - src/PageBuilderComponentsExamples/Test
+        - src/PageBuilderLayout/Model
+        - src/PageBuilderLayout/Test
+        - src/PageBuilderUi/Plugin
+        - src/PageBuilderUi/Test
+        - src/PageBuilderUi/ViewModel
+    excludePaths:
+        - */Test/Screenshots/*
+    treatPhpDocTypesAsCertain: false
+    parallel:
+        maximumNumberOfProcesses: 1

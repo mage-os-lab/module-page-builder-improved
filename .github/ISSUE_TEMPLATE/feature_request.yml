@@ -1,0 +1,52 @@
+name: Feature request
+description: Propose a new capability or a change in behavior.
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lead with the use case, not the solution. We're happy to design the "how" once we agree on the "why".
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Who is blocked or frustrated right now, and what are they trying to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: If you have a concrete idea, describe it. "Not sure yet" is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - Components API (PageBuilderComponents)
+        - Example components (PageBuilderComponentsExamples)
+        - Layout settings and Tablet view (PageBuilderLayout)
+        - Editor UI (PageBuilderUi)
+        - Cross-cutting / other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and this isn't already proposed.
+          required: true

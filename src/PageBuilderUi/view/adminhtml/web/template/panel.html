@@ -1,0 +1,133 @@
+<!--
+/**
+ * Page Builder's panel (Magento_PageBuilder::panel.html), with a fresh new UI: a tab bar and
+ * a collapse button on top; "Add element" shows core's elements as a grid of tiles, "Current tree" the elements
+ * on the stage. The search, the sections and the draggable elements keep core's bindings.
+ */
+-->
+
+<div id="pagebuilder-panel-wrapper" class="pagebuilder-panel-wrapper mageos-panel" visible="!pageBuilder.isSnapshot()"
+     css="visible: isVisible(), 'sticky-top': isStickyTop, 'sticky-bottom': isStickyBottom, 'transition-out': pageBuilder.isSnapshotTransition, 'mageos-panel-collapsed': isCollapsed"
+     afterRender="afterRender">
+    <div class="mageos-panel-bar">
+        <div class="mageos-panel-tabs" role="tablist" data-bind="foreach: tabs">
+            <button type="button" role="tab" class="mageos-panel-tab"
+                    data-bind="css: {active: $parent.activeTab() === code},
+                        attr: {id: $parent.getTabId(code), 'aria-controls': $parent.getPaneId(code),
+                            'aria-selected': $parent.activeTab() === code ? 'true' : 'false',
+                            tabindex: $parent.activeTab() === code ? '0' : '-1', 'data-tab': code, title: label},
+                        click: $parent.selectTab.bind($parent, code),
+                        event: {keydown: $parent.onTabKeydown.bind($parent)}">
+                <span class="mageos-panel-tab-label" data-bind="text: label"></span>
+            </button>
+        </div>
+        <button type="button" class="mageos-panel-collapse"
+                data-bind="click: toggleCollapsed,
+                    attr: {title: isCollapsed() ? expandTitle : collapseTitle, 'aria-label': isCollapsed() ? expandTitle : collapseTitle, 'aria-expanded': isCollapsed() ? 'false' : 'true'}"></button>
+    </div>
+    <div id="pagebuilder-panel" class="pagebuilder-panel" data-bind="visible: !isCollapsed()">
+        <div class="mageos-panel-pane mageos-panel-pane-add" role="tabpanel"
+             data-bind="visible: activeTab() === 'add', attr: {id: getPaneId('add'), 'aria-labelledby': getTabId('add')}">
+            <div class="search-content-types">
+                <label for="search-content-types-input" class="mageos-visually-hidden" translate="searchPlaceholder"></label>
+                <input type="text" id="search-content-types-input" name="search" ko-value="searchValue" event="keyup: search" attr="placeholder: searchPlaceholder" autocomplete="off"/>
+                <a href="" class="close" click="clearSearch" attr="title: searchTitle" visible="searching"></a>
+            </div>
+            <ul id="search-results" class="mageos-inserter-grid" visible="searching() && searchResults().length" each="searchResults">
+                <li class="pagebuilder-draggable-content-type mageos-inserter-item" attr="id: 'content-type-' + identifier()" data-bind="draggable: Object.assign($parent.getDraggableOptions(), getDraggableOptions())">
+                    <a>
+                        <span class="content-type-icon">
+                            <i attr="class: icon"></i>
+                        </span>
+                        <span class="content-type-label" translate="label"></span>
+                    </a>
+                </li>
+            </ul>
+            <div class="search-results-empty" visible="searching() && !searchResults().length">
+                <div translate="searchNoResult"></div>
+            </div>
+            <ul id="pagebuilder-panel-menu-sections" class="pagebuilder-panel-menu-sections" visible="!searching()" each="menuSections">
+                <li attr="id: 'menu-section-' + id()" css="active: active">
+                    <div class="menu-section-title" event="click: toggle">
+                        <h4 translate="label"></h4>
+                    </div>
+                    <div class="pagebuilder-panel-menu-sections-child" css="hidden: hidden">
+                        <div>
+                            <ul class="pagebuilder-panel-menu-sections-content-types mageos-inserter-grid" each="contentTypes">
+                                <li class="pagebuilder-draggable-content-type mageos-inserter-item"
+                                    data-bind="draggable: Object.assign($parents[1].getDraggableOptions($element), getDraggableOptions($element))"
+                                    attr="id: 'content-type-' + identifier()">
+                                    <a>
+                                        <span class="content-type-icon">
+                                            <i attr="class: icon"></i>
+                                        </span>
+                                        <span class="content-type-label" translate="label"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="mageos-panel-pane mageos-panel-tree" role="tabpanel"
+             data-bind="visible: activeTab() === 'tree', attr: {id: getPaneId('tree'), 'aria-labelledby': getTabId('tree')}">
+            <div class="mageos-panel-tree-toolbar" data-bind="visible: treeNodes().length">
+                <button type="button" class="mageos-tree-expand-all" data-bind="click: expandAll, text: expandAllLabel"></button>
+                <button type="button" class="mageos-tree-collapse-all" data-bind="click: collapseAll, text: collapseAllLabel"></button>
+            </div>
+            <div class="mageos-panel-tree-empty" data-bind="visible: !treeNodes().length">
+                <span class="mageos-panel-tree-empty-icon" aria-hidden="true"></span>
+                <strong data-bind="text: treeEmptyTitle"></strong>
+                <p data-bind="text: treeEmptyText"></p>
+            </div>
+            <!-- A plain list, indented by depth: each row holds several buttons, which a tree's keys don't allow for. -->
+            <ul class="mageos-panel-tree-nodes" data-bind="foreach: treeNodes">
+                <li class="mageos-tree-node"
+                    data-bind="css: {'is-hidden': isHidden, 'is-collapsed': isCollapsed, 'is-selected': $parent.selectedNodeId() === id, 'is-stage-hovered': $parent.hoveredNodeId() === id},
+                        style: {paddingLeft: (8 + depth * 16) + 'px'},
+                        attr: {'data-content-type': contentType.config.name},
+                        event: {mouseenter: $parent.highlightNode.bind($parent, $data, true), mouseleave: $parent.highlightNode.bind($parent, $data, false)}">
+                    <button type="button" class="mageos-tree-toggle"
+                            data-bind="css: {'is-empty': !hasChildren}, disable: !hasChildren,
+                                attr: {title: $parent.actionTitles.toggle, 'aria-label': $parent.actionTitles.toggle,
+                                    'aria-expanded': hasChildren ? (isCollapsed ? 'false' : 'true') : null},
+                                click: $parent.toggleNode.bind($parent, $data)"></button>
+                    <button type="button" class="mageos-tree-label"
+                            data-bind="click: $parent.selectNode.bind($parent, $data),
+                                attr: {title: summary ? label + ': ' + summary : label, 'aria-current': $parent.selectedNodeId() === id ? 'true' : null}">
+                        <i data-bind="attr: {class: icon}"></i>
+                        <span class="mageos-tree-name" data-bind="text: label"></span>
+                        <span class="mageos-tree-summary" data-bind="text: summary"></span>
+                    </button>
+                    <span class="mageos-tree-actions">
+                        <button type="button" class="mageos-tree-action mageos-tree-move-up"
+                                data-bind="visible: canMoveUp || canMoveDown, disable: !canMoveUp,
+                                    attr: {title: $parent.actionTitles.moveUp, 'aria-label': $parent.actionTitles.moveUp},
+                                    click: $parent.moveNode.bind($parent, $data, -1)"></button>
+                        <button type="button" class="mageos-tree-action mageos-tree-move-down"
+                                data-bind="visible: canMoveUp || canMoveDown, disable: !canMoveDown,
+                                    attr: {title: $parent.actionTitles.moveDown, 'aria-label': $parent.actionTitles.moveDown},
+                                    click: $parent.moveNode.bind($parent, $data, 1)"></button>
+                        <button type="button" class="mageos-tree-action mageos-tree-duplicate"
+                                data-bind="visible: canDuplicate,
+                                    attr: {title: $parent.actionTitles.duplicate, 'aria-label': $parent.actionTitles.duplicate},
+                                    click: $parent.runNodeOption.bind($parent, $data, 'duplicate')"></button>
+                        <button type="button" class="mageos-tree-action mageos-tree-edit"
+                                data-bind="visible: canEdit,
+                                    attr: {title: $parent.actionTitles.edit, 'aria-label': $parent.actionTitles.edit},
+                                    click: $parent.runNodeOption.bind($parent, $data, 'edit')"></button>
+                        <button type="button" class="mageos-tree-action mageos-tree-remove"
+                                data-bind="visible: canRemove,
+                                    attr: {title: $parent.actionTitles.remove, 'aria-label': $parent.actionTitles.remove},
+                                    click: $parent.runNodeOption.bind($parent, $data, 'remove')"></button>
+                    </span>
+                </li>
+            </ul>
+            <div class="mageos-panel-tree-footer">
+                <button type="button" class="mageos-panel-add-button"
+                        data-bind="click: selectTab.bind($data, 'add'), text: addElementLabel"></button>
+            </div>
+        </div>
+    </div>
+</div>

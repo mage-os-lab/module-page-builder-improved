@@ -1,0 +1,12 @@
+<?php
+/**
+ * Opens the fieldset holding Page Builder when the page is opened with "Edit with Page Builder".
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \MageOS\PageBuilderUi\ViewModel\EditWithPageBuilder $viewModel
+ */
+
+$viewModel = $block->getData('view_model');
+$config = $viewModel->getInitConfig((string) $block->getData('fieldset'));
+?>
+<script type="text/x-magento-init"><?= /* @noEscape */ $config ?></script>

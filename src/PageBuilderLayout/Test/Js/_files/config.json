@@ -1,0 +1,215 @@
+{
+    "viewports": {
+        "desktop": {
+            "media": null
+        },
+        "tablet": {
+            "media": "only screen and (min-width: 768px) and (max-width: 1023px)"
+        },
+        "mobile": {
+            "media": "only screen and (max-width: 767px)"
+        }
+    },
+    "styles": {
+        "column-group": [
+            {
+                "var": "display",
+                "name": "display",
+                "converter": "Magento_PageBuilder/js/converter/style/display",
+                "preview_converter": "Magento_PageBuilder/js/converter/style/preview/display",
+                "persistence_mode": "readwrite",
+                "reader": "Magento_PageBuilder/js/property/style-property-reader"
+            },
+            {
+                "var": "mageos_column_gap",
+                "name": "--mageos-column-gap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/custom-property",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_row_gap",
+                "name": "--mageos-row-gap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/custom-property",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_columns_per_line",
+                "name": "--mageos-columns-per-line",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/columns-per-line",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_columns_justify",
+                "name": "--mageos-columns-justify",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/custom-property",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            }
+        ],
+        "column": [
+            {
+                "var": "mageos_layout",
+                "name": "--mageos-layout",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/layout",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_grid_columns",
+                "name": "--mageos-grid-columns",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/grid-columns",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_justify_content",
+                "name": "--mageos-justify-content",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_align_items",
+                "name": "--mageos-align-items",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_flex_wrap",
+                "name": "--mageos-flex-wrap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_gap",
+                "name": "--mageos-gap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            }
+        ],
+        "row-inner": [
+            {
+                "var": "mageos_layout",
+                "name": "--mageos-layout",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/layout",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_grid_columns",
+                "name": "--mageos-grid-columns",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/grid-columns",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_justify_content",
+                "name": "--mageos-justify-content",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_align_items",
+                "name": "--mageos-align-items",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_flex_wrap",
+                "name": "--mageos-flex-wrap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_gap",
+                "name": "--mageos-gap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            }
+        ],
+        "row-main": [
+            {
+                "var": "display",
+                "name": "display",
+                "converter": "Magento_PageBuilder/js/converter/style/display",
+                "preview_converter": "Magento_PageBuilder/js/converter/style/preview/display",
+                "persistence_mode": "readwrite",
+                "reader": "Magento_PageBuilder/js/property/style-property-reader"
+            },
+            {
+                "var": "mageos_layout",
+                "name": "--mageos-layout",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/layout",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_grid_columns",
+                "name": "--mageos-grid-columns",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/grid-columns",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_justify_content",
+                "name": "--mageos-justify-content",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_align_items",
+                "name": "--mageos-align-items",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_flex_wrap",
+                "name": "--mageos-flex-wrap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            },
+            {
+                "var": "mageos_gap",
+                "name": "--mageos-gap",
+                "converter": "MageOS_PageBuilderLayout/js/converter/style/mirrored",
+                "preview_converter": null,
+                "persistence_mode": "readwrite",
+                "reader": "MageOS_PageBuilderLayout/js/property/custom-property"
+            }
+        ]
+    }
+}

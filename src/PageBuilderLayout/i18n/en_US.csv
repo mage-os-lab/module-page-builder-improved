@@ -1,0 +1,55 @@
+Default,Default
+Stretch,Stretch
+Start,Start
+Center,Center
+End,End
+Baseline,Baseline
+"Stacked (flex)","Stacked (flex)"
+"Side by side (flex)","Side by side (flex)"
+"Side by side, reversed (flex)","Side by side, reversed (flex)"
+Grid,Grid
+"Keep on one line","Keep on one line"
+Wrap,Wrap
+"%1 px","%1 px"
+"Space between","Space between"
+"Space around","Space around"
+"Space evenly","Space evenly"
+"Same as Column Gap","Same as Column Gap"
+Banner,Banner
+"
+                        
+                        <p>Style changes will only affect this breakpoint</p>
+                        
+                    ","
+                        
+                        <p>Style changes will only affect this breakpoint</p>
+                        
+                    "
+"Content Layout","Content Layout"
+Layout,Layout
+"How the elements in this column are laid out. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront and in Preview, not on this stage.","How the elements in this column are laid out. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront and in Preview, not on this stage."
+"Grid Columns","Grid Columns"
+"Equal columns of the Grid layout.","Equal columns of the Grid layout."
+"Justify Content","Justify Content"
+"Along the line: across, side by side; down, stacked, instead of Vertical Alignment.","Along the line: across, side by side; down, stacked, instead of Vertical Alignment."
+"Align Items","Align Items"
+"Across the line: up and down, side by side; left and right, stacked.","Across the line: up and down, side by side; left and right, stacked."
+"Whether side by side elements wrap onto new lines.","Whether side by side elements wrap onto new lines."
+Gap,Gap
+"Space between the elements.","Space between the elements."
+"Column Gap","Column Gap"
+"Space between the columns of a line. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront, not on this stage.","Space between the columns of a line. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront, not on this stage."
+"Row Gap","Row Gap"
+"Space between wrapped or stacked columns, and between column lines.","Space between wrapped or stacked columns, and between column lines."
+"Columns per Line","Columns per Line"
+"Equal columns that wrap onto new lines, instead of the widths set on the stage: 4 on Desktop, 2 on Tablet and 1 on Mobile, for instance.","Equal columns that wrap onto new lines, instead of the widths set on the stage: 4 on Desktop, 2 on Tablet and 1 on Mobile, for instance."
+"Justify Columns","Justify Columns"
+"Where the columns of a line that they don't fill go, such as the last line with Columns per Line.","Where the columns of a line that they don't fill go, such as the last line with Columns per Line."
+Columns,Columns
+Column,Column
+"How the elements in this row are laid out. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront and in Preview, not on this stage.","How the elements in this row are laid out. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront and in Preview, not on this stage."
+Row,Row
+Slide,Slide
+Slider,Slider
+Tab,Tab
+Tabs,Tabs

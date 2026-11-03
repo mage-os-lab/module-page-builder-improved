@@ -1,0 +1,8 @@
+/node_modules/
+/vendor/
+/composer.lock
+/screenshots/
+/src/PageBuilderUi/screenshots/
+/.php-cs-fixer.cache
+/.phpunit.cache/
+/.phpunit.result.cache

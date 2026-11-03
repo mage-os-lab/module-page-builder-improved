@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+    The Tablet view's form of core's "slider" element, like its Mobile one.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_PageBuilder:etc/content_type.xsd">
+    <type name="slider">
+        <breakpoints>
+            <breakpoint name="tablet">
+                <form>pagebuilder_slider_tablet_form</form>
+            </breakpoint>
+        </breakpoints>
+    </type>
+</config>

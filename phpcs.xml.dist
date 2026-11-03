@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset name="mage-os/module-page-builder-improved">
+    <rule ref="Magento2"/>
+    <!-- JavaScript follows core's ESLint rules, not these sniffs. -->
+    <arg name="extensions" value="php,phtml"/>
+
+    <!-- PHP 8.1 intersection types (Type&MockObject) are tokenized as T_TYPE_INTERSECTION by PHPCS 3.7+,
+         but the sniff's allowed-token list only contains T_BITWISE_AND, so it can't find the docblock
+         above properties with intersection type hints. Exclude for tests until upstream is fixed. -->
+    <rule ref="Magento2.Commenting.ClassPropertyPHPDocFormatting">
+        <exclude-pattern>*/Test/*</exclude-pattern>
+    </rule>
+    <exclude-pattern>*/Test/Screenshots/*</exclude-pattern>
+
+    <file>src/PageBuilderComponents/Attribute</file>
+    <file>src/PageBuilderComponents/Block</file>
+    <file>src/PageBuilderComponents/Exception</file>
+    <file>src/PageBuilderComponents/Field</file>
+    <file>src/PageBuilderComponents/Model</file>
+    <file>src/PageBuilderComponents/Plugin</file>
+    <file>src/PageBuilderComponents/Test</file>
+    <file>src/PageBuilderComponentsExamples/Block</file>
+    <file>src/PageBuilderComponentsExamples/Test</file>
+    <file>src/PageBuilderComponentsExamples/view/frontend/templates</file>
+    <file>src/PageBuilderLayout/Model</file>
+    <file>src/PageBuilderLayout/Test</file>
+    <file>src/PageBuilderUi/Plugin</file>
+    <file>src/PageBuilderUi/Test</file>
+    <file>src/PageBuilderUi/ViewModel</file>
+    <file>src/PageBuilderUi/view/adminhtml/templates</file>
+</ruleset>

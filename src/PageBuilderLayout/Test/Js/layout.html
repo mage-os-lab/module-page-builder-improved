@@ -1,0 +1,441 @@
+<!doctype html>
+<!--
+    Browser test of the layout settings, run by Test/Js/browser.test.js at a desktop, a tablet and a mobile width.
+    Shows "RESULT: OK" when every check passes.
+
+    It writes the elements' styles the way Page Builder's master format does, with core's own code: core's style
+    generator (observable-updater/style), the module's converters, core's style registry and csso, one block per
+    viewport in the viewport's media query (as master-format/render/frame does). The styles' config and the media
+    queries are _files/config.json, which ViewportTest checks against the module's XML merged into core's.
+    Then it checks the layout on the storefront CSS (view/frontend/web/css/layout.css), reads every setting
+    back the way the stage does when it loads the content (stage-builder, then the readers and converters), and
+    checks that values the settings don't have aren't written.
+
+    Query string, as URLs: pb = core Page Builder's view/adminhtml/web, requirejs = require.js, underscore =
+    underscore.js without ".js" (Magento's lib/web has both).
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>layout test</title>
+    <link rel="stylesheet" href="../../view/frontend/web/css/layout.css">
+    <style>
+        body { margin: 0; }
+        * { box-sizing: border-box; }
+        /* What core (Luma) and Hyvä add for columns under 768px. */
+        @media (max-width: 767px) {
+            .pagebuilder-column-line { flex-wrap: wrap; }
+            .pagebuilder-column { flex-basis: 100%; max-width: 100%; }
+        }
+        /* Content wider than its column: it must not stop the column from shrinking. */
+        .wide { width: 2000px; max-width: 100%; height: 50px; background: #ccc; }
+        .box { width: 100px; background: #999; }
+        .section { margin-bottom: 40px; }
+    </style>
+</head>
+<body id="html-body">
+<!-- 4 columns of 25%. -->
+<div id="g1" class="section pagebuilder-column-group" data-content-type="column-group" data-mageos-layout="columns"
+     data-pb-style="G1">
+    <div class="pagebuilder-column-line" data-content-type="column-line" style="display: flex; width: 100%;">
+        <div class="pagebuilder-column" data-content-type="column" style="width: 25%;"><div class="wide"></div></div>
+        <div class="pagebuilder-column" data-content-type="column" style="width: 25%;"><div class="wide"></div></div>
+        <div class="pagebuilder-column" data-content-type="column" style="width: 25%;"><div class="wide"></div></div>
+        <div class="pagebuilder-column" data-content-type="column" style="width: 25%;"><div class="wide"></div></div>
+    </div>
+</div>
+<!-- 3 columns of 33.33%, 2 per line, centred. -->
+<div id="g2" class="section pagebuilder-column-group" data-content-type="column-group" data-mageos-layout="columns"
+     data-pb-style="G2">
+    <div class="pagebuilder-column-line" data-content-type="column-line" style="display: flex; width: 100%;">
+        <div class="pagebuilder-column" data-content-type="column" style="width: 33.3333%;"><div class="wide"></div></div>
+        <div class="pagebuilder-column" data-content-type="column" style="width: 33.3333%;"><div class="wide"></div></div>
+        <div class="pagebuilder-column" data-content-type="column" style="width: 33.3333%;"><div class="wide"></div></div>
+    </div>
+</div>
+<!-- A column group with a gap, around one without settings, and one saved without this module. -->
+<div id="outer" class="section pagebuilder-column-group" data-content-type="column-group" data-mageos-layout="columns"
+     data-pb-style="OUTER">
+    <div class="pagebuilder-column-line" data-content-type="column-line" style="display: flex; width: 100%;">
+        <div class="pagebuilder-column" data-content-type="column" style="width: 100%;">
+            <div id="inner" class="pagebuilder-column-group" data-content-type="column-group" data-mageos-layout="columns">
+                <div class="pagebuilder-column-line" data-content-type="column-line" style="display: flex; width: 100%;">
+                    <div class="pagebuilder-column" data-content-type="column" style="width: 50%;"><div class="wide"></div></div>
+                    <div class="pagebuilder-column" data-content-type="column" style="width: 50%;"><div class="wide"></div></div>
+                </div>
+            </div>
+            <div id="legacy" class="pagebuilder-column-group" data-content-type="column-group">
+                <div class="pagebuilder-column-line" data-content-type="column-line" style="display: flex; width: 100%;">
+                    <div class="pagebuilder-column" data-content-type="column" style="width: 50%;"><div class="wide"></div></div>
+                    <div class="pagebuilder-column" data-content-type="column" style="width: 50%;"><div class="wide"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- A contained row's content: side by side on desktop, a grid on tablet, stacked on mobile. -->
+<div class="section" data-content-type="row" data-appearance="contained" data-element="main">
+    <div id="r1" data-element="inner" data-pb-style="R1">
+        <div><div class="box" style="height: 40px;"></div></div>
+        <div><div class="box" style="height: 60px;"></div></div>
+        <div><div class="box" style="height: 40px;"></div></div>
+    </div>
+</div>
+<!-- A column's content: a 3 column grid, then side by side reversed, wrapping, on mobile. -->
+<div id="c1" class="section pagebuilder-column" data-content-type="column" data-pb-style="C1">
+    <div><div class="box" style="height: 30px;"></div></div>
+    <div><div class="box" style="height: 30px;"></div></div>
+    <div><div class="box" style="height: 30px;"></div></div>
+    <div><div class="box" style="height: 30px;"></div></div>
+</div>
+<!-- A hidden full bleed row with a grid layout. -->
+<div id="r2" class="section" data-content-type="row" data-appearance="full-bleed" data-element="main" data-pb-style="R2">
+    <div><div class="box" style="height: 30px;"></div></div>
+</div>
+<pre id="result">RESULT: PENDING</pre>
+<script>
+    (function () {
+        var query = new URLSearchParams(location.search);
+
+        window.require = {
+            paths: {
+                underscore: query.get('underscore'),
+                'object-path': query.get('pb') + '/js/resource/object-path',
+                csso: query.get('pb') + '/js/resource/csso/csso',
+                'Magento_PageBuilder': query.get('pb'),
+                'MageOS_PageBuilderLayout': '../../view/adminhtml/web'
+            },
+            onError: function (error) {
+                document.getElementById('result').textContent = 'RESULT: FAIL ' + error;
+            }
+        };
+        document.write('<script src="' + query.get('requirejs') + '"><\/script>');
+    })();
+</script>
+<script>
+    var CONVERTERS = [
+            'Magento_PageBuilder/js/converter/style/display',
+            'MageOS_PageBuilderLayout/js/converter/style/custom-property',
+            'MageOS_PageBuilderLayout/js/converter/style/columns-per-line',
+            'MageOS_PageBuilderLayout/js/converter/style/layout',
+            'MageOS_PageBuilderLayout/js/converter/style/grid-columns',
+            'MageOS_PageBuilderLayout/js/converter/style/mirrored'
+        ],
+        READERS = [
+            'Magento_PageBuilder/js/property/style-property-reader',
+            'MageOS_PageBuilderLayout/js/property/custom-property'
+        ],
+        // What core's container element sets where a row's or column's content is (display, flex-direction,
+        // vertical alignment). The module's styles must win over it.
+        CONTAINER = {display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'},
+        // Each element's settings: Desktop's, then what the Tablet and Mobile views change (their data stores are
+        // Desktop's with those changes).
+        ELEMENTS = {
+            G1: {
+                type: 'column-group',
+                desktop: {'mageos_column_gap': '24px'},
+                tablet: {'mageos_column_gap': '16px', 'mageos_columns_per_line': '2'},
+                mobile: {'mageos_row_gap': '8px'}
+            },
+            G2: {
+                type: 'column-group',
+                desktop: {'mageos_column_gap': '16px', 'mageos_columns_per_line': '2', 'mageos_columns_justify': 'center'}
+            },
+            OUTER: {type: 'column-group', desktop: {'mageos_column_gap': '48px', 'mageos_row_gap': '48px'}},
+            R1: {
+                type: 'row-inner',
+                container: true,
+                desktop: {
+                    'mageos_layout': 'row',
+                    'mageos_justify_content': 'space-between',
+                    'mageos_align_items': 'center',
+                    'mageos_gap': '16px'
+                },
+                tablet: {'mageos_layout': 'grid', 'mageos_grid_columns': '2'},
+                mobile: {'mageos_layout': 'stack'}
+            },
+            C1: {
+                type: 'column',
+                container: true,
+                desktop: {'mageos_layout': 'grid', 'mageos_grid_columns': '3', 'mageos_gap': '8px'},
+                mobile: {'mageos_layout': 'row-reverse', 'mageos_flex_wrap': 'wrap'}
+            },
+            R2: {type: 'row-main', desktop: {display: false, 'mageos_layout': 'grid'}}
+        };
+
+    require(['underscore', 'csso', 'Magento_PageBuilder/js/content-type/observable-updater/style',
+        'Magento_PageBuilder/js/content-type/style-registry'].concat(CONVERTERS, READERS), function (_, csso, generate,
+        StyleRegistry) {
+        var modules = Array.prototype.slice.call(arguments, 4),
+            converters = {},
+            readers = {},
+            failures = [],
+            width = document.documentElement.clientWidth,
+            viewport = width < 768 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop',
+            request = new XMLHttpRequest();
+
+        CONVERTERS.forEach(function (name, index) {
+            converters[name] = new modules[index]();
+        });
+        READERS.forEach(function (name, index) {
+            readers[name] = new modules[CONVERTERS.length + index]();
+        });
+
+        function check(name, ok, detail) {
+            if (!ok) {
+                failures.push(name + ' (' + detail + ')');
+            }
+        }
+        function close(a, b) {
+            return Math.abs(a - b) <= 1;
+        }
+        function rect(selector) {
+            return document.querySelector(selector).getBoundingClientRect();
+        }
+
+        function stylesConfig(config, type) {
+            return config.styles[type];
+        }
+
+        /**
+         * The <style> Page Builder's master format has for these elements.
+         */
+        function masterCss(config) {
+            var registries = {},
+                css = '';
+
+            Object.keys(config.viewports).forEach(function (name) {
+                registries[name] = new StyleRegistry();
+            });
+            Object.keys(ELEMENTS).forEach(function (id) {
+                var element = ELEMENTS[id],
+                    styleConfig = {style: stylesConfig(config, element.type)};
+
+                Object.keys(config.viewports).forEach(function (name) {
+                    var data = _.extend({display: true}, element.desktop, name === 'desktop' ? {} : element[name]),
+                        generated = generate('main', styleConfig, data, function (property) {
+                            return property.converter;
+                        }, {
+                            get: function (converter) {
+                                return converters[converter];
+                            }
+                        }),
+                        styles = {};
+
+                    // master-style: empty values aren't written; the element's styles go over the container's.
+                    _.each(_.extend({}, element.container ? CONTAINER : {}, generated), function (value, key) {
+                        if (value !== null && value !== undefined && value !== false && value !== '') {
+                            styles[key] = value;
+                        }
+                    });
+                    registries[name].setStyles('#html-body [data-pb-style="' + id + '"]', styles);
+                });
+            });
+
+            // master-format/render/frame: generateMasterCssForViewports.
+            _.each(registries, function (registry, name) {
+                var scopes = Object.keys(registry.getAllStyles()).map(function (selector) {
+                        return [selector];
+                    }),
+                    viewportCss = csso.minify(StyleRegistry.generateCss(registry.getAllStyles()), {
+                        usage: {scopes: scopes}
+                    }).css,
+                    media = config.viewports[name].media;
+
+                css += media && viewportCss ? '@media ' + media + ' { ' + viewportCss + ' }' : viewportCss;
+            });
+
+            return css;
+        }
+
+        /**
+         * Reads the settings back as the stage does: stage-builder's convertToInlineStyles, then each viewport's
+         * style through the readers and converters (master-format/read/configurable).
+         */
+        function checkReadBack(config, sheet) {
+            var viewportStyles = {};
+
+            Object.keys(config.viewports).forEach(function (name) {
+                viewportStyles[name] = {};
+            });
+            Array.from(sheet.cssRules).forEach(function (rule) {
+                var scope = 'desktop',
+                    rules = [rule];
+
+                if (rule instanceof CSSMediaRule) {
+                    scope = _.findKey(config.viewports, function (item) {
+                        return rule.conditionText === item.media;
+                    });
+                    check('the stage finds the viewport of @media ' + rule.conditionText, !!scope, 'none');
+                    rules = Array.from(rule.cssRules);
+                }
+                // csso merges rules with the same declarations: stage-builder splits their selectors.
+                rules.forEach(function (styleRule) {
+                    styleRule.selectorText.split(',').forEach(function (selector) {
+                        var id = /data-pb-style="?(\w+)/.exec(selector)[1];
+
+                        viewportStyles[scope][id] = (viewportStyles[scope][id] || '') + styleRule.style.cssText;
+                    });
+                });
+            });
+
+            Object.keys(ELEMENTS).forEach(function (id) {
+                var element = ELEMENTS[id];
+
+                Object.keys(config.viewports).forEach(function (name) {
+                    var expected = _.extend({display: true}, element.desktop, name === 'desktop' ? {} : element[name]),
+                        probe = document.createElement('div');
+
+                    probe.setAttribute('style', viewportStyles[name][id] || '');
+                    stylesConfig(config, element.type).forEach(function (style) {
+                        var value = readers[style.reader].read(probe, style.name);
+
+                        value = converters[style.converter].fromDom(value);
+                        check(id + ' reads back ' + style.var + ' in ' + name,
+                            value === (style.var in expected ? expected[style.var] : ''),
+                            JSON.stringify(value));
+                    });
+                });
+            });
+        }
+
+        function checkColumns() {
+            var line = '#g1 .pagebuilder-column',
+                a = rect(line + ':nth-child(1)'), b = rect(line + ':nth-child(2)'),
+                c = rect(line + ':nth-child(3)'), d = rect(line + ':nth-child(4)'),
+                g2 = '#g2 .pagebuilder-column',
+                e = rect(g2 + ':nth-child(1)'), f = rect(g2 + ':nth-child(2)'), g = rect(g2 + ':nth-child(3)'),
+                inner = '#inner .pagebuilder-column',
+                i1 = rect(inner + ':nth-child(1)'), i2 = rect(inner + ':nth-child(2)'),
+                legacy = '#legacy .pagebuilder-column',
+                l1 = rect(legacy + ':nth-child(1)'), l2 = rect(legacy + ':nth-child(2)');
+
+            check('no horizontal overflow', document.documentElement.scrollWidth <= width,
+                document.documentElement.scrollWidth);
+
+            if (viewport === 'desktop') {
+                check('G1: 4 columns on one line', close(a.top, d.top), d.top - a.top);
+                check('G1: 24px between columns', close(b.left - a.right, 24) && close(d.left - c.right, 24),
+                    b.left - a.right);
+                check('G1: equal columns share what is left', close(a.width, (width - 72) / 4), a.width);
+                check('G2: 2 per line, 16px apart', close(f.left - e.right, 16) && close(e.width, (width - 16) / 2),
+                    e.width);
+                check('G2: the third on the next line, 16px down', close(g.top - e.bottom, 16), g.top - e.bottom);
+                check('G2: the last line centred', close(g.left + g.width / 2, width / 2), g.left);
+            } else if (viewport === 'tablet') {
+                check('G1: 2 per line on tablet', close(a.top, b.top) && close(c.top - a.bottom, 16), c.top - a.bottom);
+                check('G1: 16px between columns on tablet', close(b.left - a.right, 16), b.left - a.right);
+                check('G1: half of what is left each', close(a.width, (width - 16) / 2), a.width);
+            } else {
+                check('G1: stacked on mobile', close(a.width, width) && close(b.left, a.left), a.width);
+                check('G1: the mobile row gap between them', close(b.top - a.bottom, 8), b.top - a.bottom);
+                check('G2: 2 per line on mobile too, as on desktop', close(e.top, f.top) && close(g.top - e.bottom, 16),
+                    g.top - e.bottom);
+            }
+
+            if (viewport !== 'mobile') {
+                check('the group inside keeps no gap of its own', close(i2.left, i1.right), i2.left - i1.right);
+                check('a group saved without the module is left alone', close(l2.left, l1.right), l2.left - l1.right);
+            } else {
+                check('the group inside stacks without a gap', close(i2.top, i1.bottom), i2.top - i1.bottom);
+                check('a group saved without the module stacks as before', close(l2.top, l1.bottom),
+                    l2.top - l1.bottom);
+            }
+        }
+
+        function checkContent() {
+            var row = rect('#r1'),
+                r = [1, 2, 3].map(function (n) {
+                    return rect('#r1 > :nth-child(' + n + ')');
+                }),
+                c = [1, 2, 3, 4].map(function (n) {
+                    return rect('#c1 > :nth-child(' + n + ')');
+                }),
+                column = rect('#c1');
+
+            if (viewport === 'desktop') {
+                check('R1: side by side', close(r[0].top + r[0].height / 2, r[1].top + r[1].height / 2) &&
+                    r[1].left > r[0].right, r[1].left);
+                check('R1: space between', close(r[0].left, row.left) && close(r[2].right, row.right), r[2].right);
+                check('C1: a grid of 3', close(c[0].top, c[2].top) && c[3].top > c[0].bottom &&
+                    close(c[0].width, (column.width - 16) / 3), c[0].width);
+                check('C1: 8px gaps', close(c[1].left - c[0].right, 8) && close(c[3].top - c[0].bottom, 8),
+                    c[1].left - c[0].right);
+            } else if (viewport === 'tablet') {
+                check('R1: a grid of 2 on tablet', close(r[0].top + r[0].height / 2, r[1].top + r[1].height / 2) &&
+                    close(r[2].left, r[0].left) &&
+                    close(r[0].width, (row.width - 16) / 2), r[0].width);
+                check('C1: still a grid of 3 on tablet', close(c[0].top, c[2].top), c[2].top - c[0].top);
+            } else {
+                check('R1: stacked on mobile, 16px apart', close(r[1].top - r[0].bottom, 16), r[1].top - r[0].bottom);
+                check('R1: centred, as desktop aligns them', close(r[0].left + r[0].width / 2, row.left + row.width / 2),
+                    r[0].left);
+                check('C1: side by side, reversed, on mobile', close(c[0].right, column.right) && c[1].right < c[0].left,
+                    c[0].right);
+            }
+            check('R2: hidden stays hidden', getComputedStyle(document.getElementById('r2')).display === 'none',
+                getComputedStyle(document.getElementById('r2')).display);
+        }
+
+        /**
+         * Content pasted or imported with something else in its styles: core's style generator, with the module's
+         * converters, writes none of it.
+         */
+        function checkHostile(config) {
+            var hostile = ['16px; background: url(https://example.com/x.png)', '16px}body{display:none',
+                'url(javascript:alert(1))', 'expression(alert(1))', 'center;color:red', '100000'];
+
+            Object.keys(config.styles).forEach(function (type) {
+                hostile.forEach(function (value) {
+                    var data = {display: true},
+                        generated;
+
+                    config.styles[type].forEach(function (style) {
+                        if (style.var !== 'display') {
+                            data[style.var] = value;
+                        }
+                    });
+                    generated = generate('main', {style: config.styles[type]}, data, function (property) {
+                        return property.converter;
+                    }, {
+                        get: function (converter) {
+                            return converters[converter];
+                        }
+                    });
+                    check(type + ' writes nothing of ' + value, _.every(_.omit(generated, 'display'), function (css) {
+                        return css === '' || css === null || css === undefined;
+                    }), JSON.stringify(generated));
+                });
+            });
+        }
+
+        request.onload = function () {
+            var config = JSON.parse(request.responseText),
+                style = document.createElement('style');
+
+            try {
+                style.textContent = masterCss(config);
+                document.head.appendChild(style);
+                check('csso keeps the custom properties',
+                    /--mageos-column-basis: ?calc\(\(100% - 1 \* var\(--mageos-column-gap, 0px\)\) \/ 2\)/
+                        .test(style.textContent), style.textContent.slice(0, 300));
+                checkReadBack(config, style.sheet);
+                checkColumns();
+                checkContent();
+                checkHostile(config);
+            } catch (error) {
+                failures.push(error.stack || String(error));
+            }
+
+            document.getElementById('result').textContent = (failures.length
+                ? 'RESULT: FAIL ' + failures.join('; ')
+                : 'RESULT: OK') + ' @' + width + 'px (' + viewport + ')';
+            window.MASTER_CSS = style.textContent;
+        };
+        request.open('GET', '_files/config.json');
+        request.send();
+    });
+</script>
+</body>
+</html>

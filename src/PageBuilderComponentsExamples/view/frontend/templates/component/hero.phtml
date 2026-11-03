@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use MageOS\PageBuilderComponentsExamples\Block\Component\Hero;
+
+/** @var Hero $block */
+/** @var Escaper $escaper */
+
+// Classes of the module's own (css/components.css), so any theme can style them: no CSS framework needed.
+$hasImage = $block->image !== '';
+$rootClass = implode(' ', array_filter([
+    'mageos-pbc mageos-pbc-hero',
+    'mageos-pbc-hero--height-' . (in_array($block->height, ['small', 'large', 'screen'], true)
+        ? $block->height : 'medium'),
+    'mageos-pbc-hero--position-' . (in_array($block->position, ['center', 'right'], true)
+        ? $block->position : 'left'),
+    $block->textColor === 'light' ? 'mageos-pbc-hero--light' : 'mageos-pbc-hero--dark',
+    $hasImage ? 'mageos-pbc-hero--has-image' : '',
+]));
+$imageSize = $hasImage ? $block->getImageSize($block->image) : null;
+$buttons = $block->getButtons();
+?>
+<section class="<?= /* @noEscape fixed class names */ $rootClass ?>">
+    <?php if ($hasImage): ?>
+        <img src="<?= $escaper->escapeUrl($block->image) ?>"
+             alt="<?= $escaper->escapeHtmlAttr($block->imageAlt) ?>"
+             class="mageos-pbc-hero__image"
+             <?php if ($imageSize !== null): ?>
+                 width="<?= (int) $imageSize['width'] ?>" height="<?= (int) $imageSize['height'] ?>"
+             <?php endif; ?>
+             <?= /* @noEscape fixed attribute */ $block->highPriority ? 'fetchpriority="high"' : 'decoding="async"' ?>>
+        <?php if ($block->overlay): ?>
+            <div class="mageos-pbc-hero__overlay" aria-hidden="true"></div>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <div class="mageos-pbc__container mageos-pbc-hero__inner">
+        <div class="mageos-pbc-hero__content">
+            <?php if ($block->eyebrow !== ''): ?>
+                <p class="mageos-pbc__eyebrow"><?= $escaper->escapeHtml($block->eyebrow) ?></p>
+            <?php endif; ?>
+            <?php if ($block->title !== ''): ?>
+                <h2 class="mageos-pbc-hero__title"><?= $escaper->escapeHtml($block->title) ?></h2>
+            <?php endif; ?>
+            <?php if ($block->content !== ''): ?>
+                <div class="mageos-pbc-hero__text">
+                    <?= /* @noEscape WYSIWYG HTML, already run through the CMS filter */ $block->content ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($buttons): ?>
+                <div class="mageos-pbc__buttons">
+                    <?php foreach ($buttons as $style => $button): ?>
+                        <a href="<?= $escaper->escapeUrl($button['link']->url) ?>"
+                           class="mageos-pbc__button mageos-pbc__button--<?= /* @noEscape */ $style ?>"
+                           <?= /* @noEscape fixed attribute string */ $button['link']->getTargetAttributes() ?>>
+                            <?= $escaper->escapeHtml($button['text']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>

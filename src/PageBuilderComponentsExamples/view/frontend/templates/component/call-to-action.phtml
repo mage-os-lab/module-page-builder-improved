@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use MageOS\PageBuilderComponentsExamples\Block\Component\CallToAction;
+
+/** @var CallToAction $block */
+/** @var Escaper $escaper */
+
+$rootClass = implode(' ', [
+    'mageos-pbc mageos-pbc-call-to-action',
+    'mageos-pbc-call-to-action--' . (in_array($block->style, ['primary', 'dark'], true) ? $block->style : 'light'),
+    $block->alignment === 'split' ? 'mageos-pbc-call-to-action--split' : 'mageos-pbc-call-to-action--center',
+]);
+$buttons = $block->getButtons();
+?>
+<section class="<?= /* @noEscape fixed class names */ $rootClass ?>">
+    <div class="mageos-pbc__container">
+        <div class="mageos-pbc-call-to-action__box">
+            <div class="mageos-pbc-call-to-action__content">
+                <?php if ($block->title !== ''): ?>
+                    <h2 class="mageos-pbc-call-to-action__title"><?= $escaper->escapeHtml($block->title) ?></h2>
+                <?php endif; ?>
+                <?php if ($block->content !== ''): ?>
+                    <div class="mageos-pbc-call-to-action__text">
+                        <?= /* @noEscape WYSIWYG HTML, already run through the CMS filter */ $block->content ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php if ($buttons): ?>
+                <div class="mageos-pbc__buttons">
+                    <?php foreach ($buttons as $style => $button): ?>
+                        <a href="<?= $escaper->escapeUrl($button['link']->url) ?>"
+                           class="mageos-pbc__button mageos-pbc__button--<?= /* @noEscape */ $style ?>"
+                           <?= /* @noEscape fixed attribute string */ $button['link']->getTargetAttributes() ?>>
+                            <?= $escaper->escapeHtml($button['text']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# The jobs only read the repository. Actions and the reusable workflow are pinned to commit SHAs (tags can be
+# moved); update the SHA and its version comment together.
+permissions:
+  contents: read
+
+jobs:
+  compute_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.supported-version.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+      # Magento 2.4.8 only: composer.json pins its Page Builder (2.2.6), see README.md.
+      - uses: graycoreio/github-actions-magento2/supported-version@v8.11.0
+        id: supported-version
+        with:
+          kind: custom
+          custom_versions: 'magento/project-community-edition:2.4.8, magento/project-community-edition:2.4.8-p5'
+
+  check-extension:
+    needs: compute_matrix
+    uses: graycoreio/github-actions-magento2/.github/workflows/check-extension.yaml@v8.11.0
+    # No composer credentials: it installs Magento from the public Mage-OS mirror (its default), and the
+    # actions it runs inside are referenced by tag, which pinning this workflow doesn't pin.
+    with:
+      matrix: ${{ needs.compute_matrix.outputs.matrix }}
+
+  quality:
+    name: Unit tests, static analysis and JavaScript tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ matrix.php }}' }
+      - run: composer install --no-interaction --prefer-dist
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+      - run: composer test
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm install --no-save --no-package-lock knockout@3.5.1 requirejs@2.3.7 underscore@1.13.8 puppeteer@24.10.0
+      - run: composer test:js
+      # In headless Chrome: stage preview sizing and the empty preview; the layout settings with core's style code.
+      - run: node src/PageBuilderComponents/Test/Js/browser.test.js
+      - run: node src/PageBuilderLayout/Test/Js/browser.test.js

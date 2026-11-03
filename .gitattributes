@@ -1,0 +1,16 @@
+# Left out of the package's dist archive (GitHub's zipball, which Packagist installs; composer.json's
+# archive.exclude does the same for "composer archive"): CI, the dev tools' config, the JavaScript and browser
+# tests with their fixtures, the screenshot scripts and the READMEs' screenshots. Test/Unit ships, as in
+# Magento's own modules; composer.json keeps it out of the optimized classmap (exclude-from-classmap).
+/.github                  export-ignore
+/.gitattributes           export-ignore
+/.gitignore               export-ignore
+/.php-cs-fixer.dist.php   export-ignore
+/phpcs.xml.dist           export-ignore
+/phpstan.neon             export-ignore
+/phpunit.xml.dist         export-ignore
+/release-please-config.json   export-ignore
+/.release-please-manifest.json export-ignore
+/src/*/Test/Js            export-ignore
+/src/*/Test/Screenshots   export-ignore
+/src/*/docs/screenshots   export-ignore

@@ -1,0 +1,89 @@
+// /**
+//  * Core Page Builder's admin styles (the panel, the header and the stage; not the forms) with the module's, for
+//  * screenshots outside a live admin. Paths are the containers' in run.sh: Magento at /m, the module at /ui.
+//  */
+
+@media-common: true;
+@media-target: 'all';
+@screen__xs: 480px;
+@screen__m: 768px;
+@screen__l: 1024px;
+
+@import (reference) '/m/lib/web/css/source/lib/_lib.less';
+@import '/m/vendor/magento/theme-adminhtml-backend/web/css/source/_variables.less';
+@import '/m/vendor/magento/theme-adminhtml-backend/web/css/source/utilities/_animations.less';
+
+// The backend theme's, which Page Builder's styles extend.
+.abs-icon {
+    -webkit-font-smoothing: antialiased;
+    font-family: @icons-admin__font-name;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: none;
+}
+
+@font-face {
+    font-family: @icons-admin__font-name;
+    src: url('static/fonts/admin-icons/admin-icons.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 400;
+    src: url('static/fonts/opensans/regular/opensans-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 600;
+    src: url('static/fonts/opensans/semibold/opensans-600.woff2') format('woff2');
+}
+
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_mixins.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_var.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_common.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_buttons.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_panel.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_page-builder.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_icons.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_fonts.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_typography.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_drag-drop.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/content-type/_import.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_toolbar.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/_mobile-viewport.less';
+@import '/m/vendor/magento/module-page-builder/view/adminhtml/web/css/source/form/element/_margins-and-padding.less';
+@import '/ui/view/adminhtml/web/css/source/_module.less';
+
+// The admin page around the stage.
+html {
+    font-size: 62.5%;
+}
+
+body {
+    background: #f5f5f5;
+    color: #303030;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+input[type=text] {
+    border: 1px solid #adadad;
+    font: inherit;
+}
+
+// Last, as the last definition wins: Magento's lib sets it to ''.
+@baseDir: 'static/';

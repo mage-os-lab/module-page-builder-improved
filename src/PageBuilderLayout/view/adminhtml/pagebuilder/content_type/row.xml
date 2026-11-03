@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!--
+    Content layout of core's "Row" element (side by side, grid, justify, align, wrap, gap; see
+    ui_component/pagebuilder_row_form.xml), per viewport, on the element holding the row's content: "inner" for
+    the contained and full width appearances, "main" for full bleed. And the Tablet view's form.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_PageBuilder:etc/content_type.xsd">
+    <type name="row">
+        <breakpoints>
+            <breakpoint name="tablet">
+                <form>pagebuilder_row_tablet_form</form>
+            </breakpoint>
+        </breakpoints>
+        <appearances>
+            <appearance name="contained">
+                <elements>
+                    <element name="inner">
+                        <style name="mageos_layout" source="--mageos-layout" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/layout"/>
+                        <style name="mageos_grid_columns" source="--mageos-grid-columns" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/grid-columns"/>
+                        <style name="mageos_justify_content" source="--mageos-justify-content" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_align_items" source="--mageos-align-items" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_flex_wrap" source="--mageos-flex-wrap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_gap" source="--mageos-gap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                    </element>
+                </elements>
+            </appearance>
+            <appearance name="full-width">
+                <elements>
+                    <element name="inner">
+                        <style name="mageos_layout" source="--mageos-layout" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/layout"/>
+                        <style name="mageos_grid_columns" source="--mageos-grid-columns" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/grid-columns"/>
+                        <style name="mageos_justify_content" source="--mageos-justify-content" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_align_items" source="--mageos-align-items" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_flex_wrap" source="--mageos-flex-wrap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_gap" source="--mageos-gap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                    </element>
+                </elements>
+            </appearance>
+            <appearance name="full-bleed">
+                <elements>
+                    <element name="main">
+                        <style name="mageos_layout" source="--mageos-layout" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/layout"/>
+                        <style name="mageos_grid_columns" source="--mageos-grid-columns" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/grid-columns"/>
+                        <style name="mageos_justify_content" source="--mageos-justify-content" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_align_items" source="--mageos-align-items" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_flex_wrap" source="--mageos-flex-wrap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                        <style name="mageos_gap" source="--mageos-gap" reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/mirrored"/>
+                    </element>
+                </elements>
+            </appearance>
+        </appearances>
+    </type>
+</config>

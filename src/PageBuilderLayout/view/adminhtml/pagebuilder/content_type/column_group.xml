@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!--
+    Layout of core's "Columns" element (see ui_component/pagebuilder_column_group_form.xml): column gap, row gap,
+    columns per line and justify, stored per viewport as custom properties on the column group, which
+    view/frontend/web/css/layout.css applies to its column lines. data-mageos-layout marks the groups saved with
+    these settings, so the CSS leaves the others as they are. And the Tablet and Mobile views' forms: core's
+    "Columns" has none.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_PageBuilder:etc/content_type.xsd">
+    <type name="column-group">
+        <breakpoints>
+            <breakpoint name="tablet">
+                <form>pagebuilder_column_group_tablet_form</form>
+            </breakpoint>
+            <breakpoint name="mobile">
+                <form>pagebuilder_column_group_mobile_form</form>
+            </breakpoint>
+        </breakpoints>
+        <appearances>
+            <appearance name="default">
+                <elements>
+                    <element name="main">
+                        <style name="mageos_column_gap" source="--mageos-column-gap"
+                               reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/custom-property"/>
+                        <style name="mageos_row_gap" source="--mageos-row-gap"
+                               reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/custom-property"/>
+                        <style name="mageos_columns_per_line" source="--mageos-columns-per-line"
+                               reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/columns-per-line"/>
+                        <style name="mageos_columns_justify" source="--mageos-columns-justify"
+                               reader="MageOS_PageBuilderLayout/js/property/custom-property"
+                               converter="MageOS_PageBuilderLayout/js/converter/style/custom-property"/>
+                        <static_attribute source="data-mageos-layout" value="columns"/>
+                    </element>
+                </elements>
+            </appearance>
+        </appearances>
+    </type>
+</config>

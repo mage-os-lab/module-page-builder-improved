@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Layout of core's "Columns" element, per viewport: see pagebuilder/content_type/column_group.xml.
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="mageos_layout_fieldset" sortOrder="15">
+        <settings>
+            <label translate="true">Layout</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+        <field name="mageos_column_gap" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Column Gap</label>
+                <notice translate="true">Space between the columns of a line. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront, not on this stage.</notice>
+                <dataScope>mageos_column_gap</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\Gap"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_row_gap" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Row Gap</label>
+                <notice translate="true">Space between wrapped or stacked columns, and between column lines.</notice>
+                <dataScope>mageos_row_gap</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\RowGap"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_columns_per_line" sortOrder="30" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Columns per Line</label>
+                <notice translate="true">Equal columns that wrap onto new lines, instead of the widths set on the stage: 4 on Desktop, 2 on Tablet and 1 on Mobile, for instance.</notice>
+                <dataScope>mageos_columns_per_line</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\ColumnsPerLine"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_columns_justify" sortOrder="40" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Justify Columns</label>
+                <notice translate="true">Where the columns of a line that they don't fill go, such as the last line with Columns per Line.</notice>
+                <dataScope>mageos_columns_justify</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\JustifyContent"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

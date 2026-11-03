@@ -1,0 +1,117 @@
+<!doctype html>
+<!--
+    Browser test of view/adminhtml/web/js/utils/empty-preview.js, with preview-frame.js sizing the iframe as on
+    the stage. Run by Test/Js/browser.test.js. It shows "RESULT: OK" when every check passes.
+
+    A component just added, its fields empty, renders nothing visible: its iframe is sized to 0px, and the stage
+    shows a placeholder instead. Once the editor fills a field, the preview has a height and the placeholder goes.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>empty-preview test</title>
+    <script>
+        // Minimal AMD loader for the modules under test.
+        var modules = [];
+        function define(deps, factory) { modules.push(factory()); }
+    </script>
+    <script src="../../view/adminhtml/web/js/utils/preview-frame.js"></script>
+    <script src="../../view/adminhtml/web/js/utils/empty-preview.js"></script>
+</head>
+<body style="margin:0">
+<div id="stage" style="width:800px">
+    <div class="rendered-content" id="rendered"></div>
+</div>
+<pre id="result">RESULT: PENDING</pre>
+<script>
+    (function () {
+        var previewFrame = modules[0],
+            emptyPreview = modules[1],
+            failures = [],
+            rendered = document.getElementById('rendered'),
+            states = [],
+            stop;
+
+        function check(name, ok, detail) {
+            if (!ok) {
+                failures.push(name + ' (' + detail + ')');
+            }
+        }
+
+        // What ComponentRenderer outputs, for a component whose template renders `body`.
+        function previewHtml(body) {
+            var doc = '<!doctype html><html><head></head><body style="margin:0;display:flow-root">' + body
+                + '</body></html>';
+
+            return '<iframe data-mageos-pbc-preview="" style="display:block;width:100%;border:0" srcdoc="'
+                + doc.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></iframe>';
+        }
+
+        function last() {
+            return states[states.length - 1];
+        }
+
+        function finish() {
+            stop();
+            document.getElementById('result').textContent = failures.length
+                ? 'RESULT: FAIL ' + failures.join('; ')
+                : 'RESULT: OK';
+        }
+
+        previewFrame.watch(document);
+
+        // Nothing rendered yet: empty.
+        stop = emptyPreview.watch(rendered, function (isEmpty) {
+            states.push(isEmpty);
+        });
+        check('empty before render', last() === true, String(last()));
+
+        // A component with empty fields: elements without content, in an iframe sized to them. The theme's
+        // stylesheet resets margins (as Hyvä's Tailwind preflight does), so they take no space.
+        rendered.innerHTML = previewHtml('<style>h2, p { margin: 0; }</style>'
+            + '<section class="hero"><h2 id="title"></h2><p></p></section>');
+
+        setTimeout(function () {
+            var frame = rendered.querySelector('iframe');
+
+            check('iframe sized to nothing', frame.style.height === '0px', frame.style.height);
+            check('empty after render', last() === true, String(last()));
+
+            // The editor fills in the title: the iframe grows, the placeholder goes.
+            frame.contentDocument.getElementById('title').textContent = 'Autumn collection';
+
+            setTimeout(function () {
+                check('iframe grew', parseInt(frame.style.height, 10) > 8, frame.style.height);
+                check('not empty with content', last() === false, String(last()));
+
+                // Without an iframe (Luma): plain HTML, emptied again.
+                rendered.innerHTML = '<div style="height:120px"></div>';
+
+                setTimeout(function () {
+                    check('not empty, plain HTML', last() === false, String(last()));
+                    rendered.innerHTML = '<div></div>';
+
+                    setTimeout(function () {
+                        check('empty, plain HTML', last() === true, String(last()));
+
+                        // Removed from the stage: not reported as empty.
+                        rendered.innerHTML = '<div style="height:50px"></div>';
+                        setTimeout(function () {
+                            var count;
+
+                            rendered.parentNode.removeChild(rendered);
+                            count = states.length;
+                            setTimeout(function () {
+                                check('detached ignored', states.length === count && last() === false,
+                                    states.slice(count).join());
+                                finish();
+                            }, 300);
+                        }, 300);
+                    }, 300);
+                }, 300);
+            }, 600);
+        }, 600);
+    }());
+</script>
+</body>
+</html>

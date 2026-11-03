@@ -1,0 +1,53 @@
+<!--
+/**
+ * Page Builder's stage wrapper (Magento_PageBuilder::page-builder.html), with its header reworked: "Apply Template"
+ * and "Save as Template" in one "Templates" menu, a primary "Save page" button, and the full screen toggle as a
+ * button. The rest is core's.
+ */
+-->
+<div class="pagebuilder-stage-wrapper"
+     css="Object.assign(
+        {'stage-full-screen': isFullScreen, 'stage-content-snapshot': isSnapshot, 'transition-out': isSnapshotTransition, 'stage-is-active': (!isSnapshot() || isFullScreen)},
+        viewportClasses)"
+     ko-style="wrapperStyles">
+    <div class="admin__field pagebuilder-header"
+         css="visible: panel.isVisible(), 'transition-out': isSnapshotTransition()"
+         if="!isSnapshot()">
+        <span class="viewport-buttons">
+              <render args="viewportTemplate"></render>
+        </span>
+        <span class="template-buttons" afterRender="afterRenderHeaderButtons">
+            <div class="mageos-header-menu" if="hasTemplateActions()" css="'is-open': isTemplateMenuOpen">
+                <button type="button" class="mageos-header-menu-toggle" aria-haspopup="true"
+                        attr="'aria-expanded': isTemplateMenuOpen() ? 'true' : 'false'"
+                        click="toggleTemplateMenu" text="templateMenuLabel"></button>
+                <ul class="mageos-header-menu-items" role="menu" visible="isTemplateMenuOpen">
+                    <li role="none" if="isAllowedTemplateApply">
+                        <button type="button" role="menuitem" click="applyTemplate" text="applyTemplateLabel"></button>
+                    </li>
+                    <li role="none" if="isAllowedTemplateSave">
+                        <button type="button" role="menuitem" click="saveTemplate" text="saveTemplateLabel"></button>
+                    </li>
+                </ul>
+            </div>
+            <if args="canSavePage()">
+                <button type="button" class="mageos-save-page" click="savePage" text="savePageLabel"></button>
+            </if>
+            <button type="button" class="mageos-fullscreen-toggle" click="toggleFullScreen.bind($data, {animate:true})"
+                    attr="{title: getFullScreenLabel(), 'aria-label': getFullScreenLabel()}">
+                <i css="'icon-pagebuilder-fullscreen': !isFullScreen(), 'icon-pagebuilder-fullscreen-exit': isFullScreen()"
+                   aria-hidden="true"></i>
+            </button>
+        </span>
+    </div>
+    <with args="panel">
+        <render></render>
+    </with>
+    <if args="isStageReady">
+        <with args="stage">
+            <render></render>
+        </with>
+        <!-- Do not modify the "sandbox" attribute without approval from a security engineer -->
+        <iframe attr="id: 'render_frame_' + id" sandbox="allow-scripts" style="position: absolute; width:0; height:0; border: none;"></iframe>
+    </if>
+</div>

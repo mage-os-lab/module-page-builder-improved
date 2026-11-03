@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Page Builder UI</title>
+    <link rel="stylesheet" href="backend.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="jquery.min.js"></script>
+    <script src="knockout.js"></script>
+</head>
+<body>
+<!-- Another form's Save, in a modal, first in the document: "Save page" leaves it alone. -->
+<aside class="modal-slide" hidden><div class="modal-inner-wrap">
+    <button id="save-button" type="button" onclick="window.harnessLog.push('modal saved')">Save</button>
+</div></aside>
+<!-- The page's own Save, which the header's "Save page" clicks. -->
+<button id="save-button" type="button" hidden onclick="window.harnessLog.push('page saved')">Save</button>
+<!-- harness.js renders the module's page-builder.html here. -->
+<div id="pb" class="harness-admin"></div>
+<script src="harness.js"></script>
+</body>
+</html>

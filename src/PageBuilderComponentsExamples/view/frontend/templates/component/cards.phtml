@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use MageOS\PageBuilderComponentsExamples\Block\Component\Cards;
+
+/** @var Cards $block */
+/** @var Escaper $escaper */
+
+$cards = $block->getCards();
+if (!$cards && $block->title === '' && $block->intro === '') {
+    return;
+}
+?>
+<section class="mageos-pbc mageos-pbc-cards">
+    <div class="mageos-pbc__container">
+        <?php if ($block->title !== '' || $block->intro !== ''): ?>
+            <div class="mageos-pbc__heading">
+                <?php if ($block->title !== ''): ?>
+                    <h2 class="mageos-pbc__title"><?= $escaper->escapeHtml($block->title) ?></h2>
+                <?php endif; ?>
+                <?php if ($block->intro !== ''): ?>
+                    <p class="mageos-pbc__intro">
+                        <?= /* @noEscape escaped, line breaks kept */ nl2br($escaper->escapeHtml($block->intro)) ?>
+                    </p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($cards): ?>
+            <ul class="mageos-pbc-cards__list mageos-pbc-cards__list--<?= (int) $block->getColumnCount() ?>">
+                <?php foreach ($cards as $card): ?>
+                    <?php
+                    $link = $card['link'];
+                    // Without a link text, the whole card is the link.
+                    $wholeCardIsLink = $link !== null && $card['linkText'] === '';
+                    ?>
+                    <li class="mageos-pbc-cards__card<?= $wholeCardIsLink ? ' mageos-pbc-cards__card--link' : '' ?>">
+                        <?php if ($card['image'] !== ''): ?>
+                            <?php $imageSize = $block->getImageSize($card['image']); ?>
+                            <img src="<?= $escaper->escapeUrl($card['image']) ?>"
+                                 alt="<?= $escaper->escapeHtmlAttr($card['imageAlt']) ?>"
+                                 class="mageos-pbc-cards__image"
+                                 <?php if ($imageSize !== null): ?>
+                                     width="<?= (int) $imageSize['width'] ?>"
+                                     height="<?= (int) $imageSize['height'] ?>"
+                                 <?php endif; ?>
+                                 loading="lazy"
+                                 decoding="async">
+                        <?php endif; ?>
+                        <div class="mageos-pbc-cards__body">
+                            <?php if ($card['title'] !== ''): ?>
+                                <h3 class="mageos-pbc-cards__title">
+                                    <?php if ($wholeCardIsLink): ?>
+                                        <a href="<?= $escaper->escapeUrl($link->url) ?>"
+                                           class="mageos-pbc-cards__cover-link"
+                                           <?= /* @noEscape fixed attribute string */ $link->getTargetAttributes() ?>>
+                                            <?= $escaper->escapeHtml($card['title']) ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <?= $escaper->escapeHtml($card['title']) ?>
+                                    <?php endif; ?>
+                                </h3>
+                            <?php endif; ?>
+                            <?php if ($card['text'] !== ''): ?>
+                                <p class="mageos-pbc-cards__text">
+                                    <?= /* @noEscape escaped, line breaks kept */
+                                        nl2br($escaper->escapeHtml($card['text'])) ?>
+                                </p>
+                            <?php endif; ?>
+                            <?php if ($link !== null && $card['linkText'] !== ''): ?>
+                                <a href="<?= $escaper->escapeUrl($link->url) ?>"
+                                   class="mageos-pbc-cards__link"
+                                   <?= /* @noEscape fixed attribute string */ $link->getTargetAttributes() ?>>
+                                    <?= $escaper->escapeHtml($card['linkText']) ?>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+</section>

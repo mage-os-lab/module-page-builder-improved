@@ -1,0 +1,16 @@
+[
+    {"decoded": "", "encoded": ""},
+    {"decoded": "Plain text, digits 123 and spaces", "encoded": "Plain text, digits 123 and spaces"},
+    {"decoded": "Say \"hello\"", "encoded": "Say ^1hello^1"},
+    {"decoded": "It's", "encoded": "It^2s"},
+    {"decoded": "{{store url=\"\"}}", "encoded": "^3^3store url=^1^1^4^4"},
+    {"decoded": "C:\\path\\\\x", "encoded": "C:^5path^5^5x"},
+    {"decoded": "100% off, %22quoted%22", "encoded": "100^6 off, ^622quoted^622"},
+    {"decoded": "<p class=\"a\">Tom &amp; Jerry</p>", "encoded": "^7p class=^1a^1^8Tom ^9amp; Jerry^7/p^8"},
+    {"decoded": "^ caret, ^0 and ^1 literally", "encoded": "^0 caret, ^00 and ^01 literally"},
+    {"decoded": "\" type=\"Evil\\Block\" template=\"x", "encoded": "^1 type=^1Evil^5Block^1 template=^1x"},
+    {"decoded": "Line one\nLine two\ttab", "encoded": "Line one\nLine two\ttab"},
+    {"decoded": "Ünïcødé — 東京 🚀", "encoded": "Ünïcødé — 東京 🚀"},
+    {"decoded": "{\"type\":\"product\",\"product\":\"42\",\"setting\":true}", "encoded": "^3^1type^1:^1product^1,^1product^1:^142^1,^1setting^1:true^4"},
+    {"decoded": "`backtick` and |pipe| stay", "encoded": "`backtick` and |pipe| stay"}
+]

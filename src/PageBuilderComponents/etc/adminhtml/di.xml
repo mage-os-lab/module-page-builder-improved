@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Edit forms are only opened in the admin. -->
+    <type name="Magento\Ui\Config\Reader\FileResolver">
+        <plugin name="mageos_page_builder_components_add_form_files"
+                type="MageOS\PageBuilderComponents\Plugin\AddFormFiles"/>
+    </type>
+
+    <type name="Magento\Framework\View\Model\Layout\Merge">
+        <plugin name="mageos_page_builder_components_add_form_layout_handle"
+                type="MageOS\PageBuilderComponents\Plugin\AddFormLayoutHandle"/>
+    </type>
+</config>

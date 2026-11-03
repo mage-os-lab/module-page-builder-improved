@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Content layout of core's "Column" element, per viewport: see pagebuilder/content_type/column.xml.
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="mageos_layout_fieldset" sortOrder="15">
+        <settings>
+            <label translate="true">Content Layout</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+        <field name="mageos_layout" sortOrder="10" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Layout</label>
+                <notice translate="true">How the elements in this column are laid out. Set in the Desktop, Tablet or Mobile view, for that viewport. Shown on the storefront and in Preview, not on this stage.</notice>
+                <dataScope>mageos_layout</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\ContentLayout"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_grid_columns" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Grid Columns</label>
+                <notice translate="true">Equal columns of the Grid layout.</notice>
+                <dataScope>mageos_grid_columns</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\ColumnsPerLine"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_justify_content" sortOrder="30" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Justify Content</label>
+                <notice translate="true">Along the line: across, side by side; down, stacked, instead of Vertical Alignment.</notice>
+                <dataScope>mageos_justify_content</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\JustifyContent"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_align_items" sortOrder="40" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Align Items</label>
+                <notice translate="true">Across the line: up and down, side by side; left and right, stacked.</notice>
+                <dataScope>mageos_align_items</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\AlignItems"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_flex_wrap" sortOrder="50" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Wrap</label>
+                <notice translate="true">Whether side by side elements wrap onto new lines.</notice>
+                <dataScope>mageos_flex_wrap</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\FlexWrap"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mageos_gap" sortOrder="60" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string"/>
+                    <item name="breakpoints" xsi:type="array">
+                        <item name="tablet" xsi:type="boolean">true</item>
+                        <item name="mobile" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Gap</label>
+                <notice translate="true">Space between the elements.</notice>
+                <dataScope>mageos_gap</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="MageOS\PageBuilderLayout\Model\Config\Source\Gap"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

@@ -1,0 +1,35 @@
+// /**
+//  * Component previews on the stage.
+//  */
+
+@mageos-pbc__accent: #eb5202;
+
+//
+//  Component previews: a placeholder while there is nothing to show
+//  _____________________________________________
+
+.pagebuilder-mageos-component .pagebuilder-block-placeholder {
+    align-items: center;
+    background-color: @color-gray98;
+    border: 1px dashed @color-gray65-lighten;
+    color: @color-darker-gray;
+    display: flex;
+    font-size: 14px;
+    justify-content: center;
+    min-height: 80px;
+    padding: 16px;
+    text-align: center;
+
+    .placeholder-text {
+        opacity: 1;
+    }
+
+    &.mageos-pbc-empty-preview {
+        cursor: pointer;
+
+        &:hover {
+            border-color: @mageos-pbc__accent;
+            color: @color-brownie-almost;
+        }
+    }
+}

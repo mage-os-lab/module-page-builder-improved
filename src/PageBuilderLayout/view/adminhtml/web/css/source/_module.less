@@ -1,0 +1,25 @@
+// /**
+//  * Tablet view of the Page Builder stage: the stage at a tablet's width in full screen and in the content
+//  * snapshot, as core's _mobile-viewport.less does for Mobile. The width is inside the Tablet media query
+//  * (etc/view.xml, up to 1023px): at 1024px the storefront shows the Desktop styles. It is the widest a visitor
+//  * gets the Tablet styles at, as core's 768px for Mobile is (one pixel over) the widest for Mobile.
+//  */
+
+@mageos-layout__tablet-width: 1023px;
+
+.tablet-viewport {
+    &.pagebuilder-stage-wrapper {
+        &.stage-content-snapshot,
+        &.stage-full-screen {
+            .pagebuilder-stage {
+                .pagebuilder-canvas {
+                    left: 50%;
+                    margin: 0;
+                    max-width: 100%;
+                    transform: translateX(-50%);
+                    width: @mageos-layout__tablet-width;
+                }
+            }
+        }
+    }
+}

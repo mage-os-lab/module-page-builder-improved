@@ -1,0 +1,107 @@
+name: Bug report
+description: Something's broken in one of the Page Builder Improved modules.
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a report. A clear reproduction is the fastest path to a fix.
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      multiple: true
+      options:
+        - MageOS_PageBuilderComponents
+        - MageOS_PageBuilderComponentsExamples
+        - MageOS_PageBuilderLayout
+        - MageOS_PageBuilderUi
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      description: From `composer show mage-os/module-page-builder-improved`.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: magento-version
+    attributes:
+      label: Magento / Mage-OS version
+      placeholder: "Magento 2.4.8-p3 / Mage-OS 2.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: php-version
+    attributes:
+      label: PHP version
+      options:
+        - "8.3"
+        - "8.4"
+        - Other (note below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Storefront theme
+      options:
+        - Luma
+        - Hyvä
+        - Custom (note below)
+        - N/A (admin only)
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact clicks in the admin, the content you added, or the component class you wrote.
+      placeholder: |
+        1. Go to Content > Pages and edit a page with Page Builder.
+        2. Drag a Hero onto the stage.
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include error messages, browser console errors, `var/log` entries or screenshots.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Additional environment detail
+      description: Browser, other Page Builder extensions installed, custom code touching Page Builder.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: I've tried with the cache flushed and static content redeployed.
+          required: true

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+    Puts core's "tablet" breakpoint on the stage's viewport switcher, between Desktop and Mobile. Core already
+    defines it (768 to 1024 px, for the product carousel); "media" is what Page Builder wraps the styles set in the
+    Tablet view in, so it must not overlap Desktop (from 1024 px) or Mobile (up to 767 px).
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/view.xsd">
+    <vars module="Magento_PageBuilder">
+        <var name="breakpoints">
+            <var name="tablet">
+                <var name="label">Tablet</var>
+                <var name="stage">true</var>
+                <var name="class">tablet-switcher</var>
+                <var name="icon">MageOS_PageBuilderLayout::css/images/switcher/switcher-tablet.svg</var>
+                <var name="media">only screen and (min-width: 768px) and (max-width: 1023px)</var>
+            </var>
+        </var>
+    </vars>
+</view>

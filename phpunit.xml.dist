@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+         executionOrder="random"
+         failOnWarning="true"
+         failOnRisky="true">
+    <testsuites>
+        <testsuite name="PageBuilderComponents">
+            <directory>src/PageBuilderComponents/Test/Unit</directory>
+        </testsuite>
+        <testsuite name="PageBuilderComponentsExamples">
+            <directory>src/PageBuilderComponentsExamples/Test/Unit</directory>
+        </testsuite>
+        <testsuite name="PageBuilderLayout">
+            <directory>src/PageBuilderLayout/Test/Unit</directory>
+        </testsuite>
+        <testsuite name="PageBuilderUi">
+            <directory>src/PageBuilderUi/Test/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <include>
+            <directory suffix=".php">src/PageBuilderComponents/Attribute</directory>
+            <directory suffix=".php">src/PageBuilderComponents/Block</directory>
+            <directory suffix=".php">src/PageBuilderComponents/Field</directory>
+            <directory suffix=".php">src/PageBuilderComponents/Model</directory>
+            <directory suffix=".php">src/PageBuilderComponents/Plugin</directory>
+            <directory suffix=".php">src/PageBuilderComponentsExamples/Block</directory>
+            <directory suffix=".php">src/PageBuilderLayout/Model</directory>
+            <directory suffix=".php">src/PageBuilderUi/Plugin</directory>
+            <directory suffix=".php">src/PageBuilderUi/ViewModel</directory>
+        </include>
+    </coverage>
+</phpunit>

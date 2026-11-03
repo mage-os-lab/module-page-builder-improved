@@ -1,0 +1,66 @@
+"Call to Action","Call to Action"
+Title,Title
+Text,Text
+"Primary Button Link","Primary Button Link"
+"Primary Button Text","Primary Button Text"
+"Secondary Button Link","Secondary Button Link"
+"Secondary Button Text","Secondary Button Text"
+Style,Style
+Light,Light
+"Primary color","Primary color"
+Dark,Dark
+Alignment,Alignment
+Centered,Centered
+"Text left, buttons right","Text left, buttons right"
+Cards,Cards
+Intro,Intro
+"Columns on Desktop","Columns on Desktop"
+"Card 1 Image","Card 1 Image"
+"Card 1 Title","Card 1 Title"
+"Card 1 Text","Card 1 Text"
+"Card 1 Link","Card 1 Link"
+"Card 1 Link Text","Card 1 Link Text"
+"Card 2 Image","Card 2 Image"
+"Card 2 Title","Card 2 Title"
+"Card 2 Text","Card 2 Text"
+"Card 2 Link","Card 2 Link"
+"Card 2 Link Text","Card 2 Link Text"
+"Card 3 Image","Card 3 Image"
+"Card 3 Title","Card 3 Title"
+"Card 3 Text","Card 3 Text"
+"Card 3 Link","Card 3 Link"
+"Card 3 Link Text","Card 3 Link Text"
+"Card 4 Image","Card 4 Image"
+"Card 4 Title","Card 4 Title"
+"Card 4 Text","Card 4 Text"
+"Card 4 Link","Card 4 Link"
+"Card 4 Link Text","Card 4 Link Text"
+Hero,Hero
+"Background Image","Background Image"
+"Image Alt Text","Image Alt Text"
+Eyebrow,Eyebrow
+"Text Position","Text Position"
+Left,Left
+Center,Center
+Right,Right
+Height,Height
+Small,Small
+Medium,Medium
+Large,Large
+"Full screen","Full screen"
+"Text Color","Text Color"
+"Shade the Image Behind the Text","Shade the Image Behind the Text"
+"Image & Text","Image & Text"
+Image,Image
+"Button Link","Button Link"
+"Button Text","Button Text"
+"Image Position","Image Position"
+"USP List","USP List"
+"USPs (one per line)","USPs (one per line)"
+Layout,Layout
+"In a row","In a row"
+Grid,Grid
+List,List
+Icon,Icon
+"Check mark","Check mark"
+None,None
