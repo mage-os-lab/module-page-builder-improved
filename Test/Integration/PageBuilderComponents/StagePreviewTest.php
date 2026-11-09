@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace MageOS\PageBuilderImproved\Test\Integration\PageBuilderComponents;
 
 use Magento\PageBuilder\Model\Stage\RendererPool;
+use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Helper\Bootstrap;
 use MageOS\PageBuilderComponents\Model\Stage\ComponentRenderer;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Core's stage preview controller gets the components' renderer from its pool, and it renders the real templates.
- *
- * @magentoAppArea frontend
  */
+#[AppArea('frontend')]
 class StagePreviewTest extends TestCase
 {
     public function testCoreRendererPoolHasTheComponentRenderer(): void
@@ -32,9 +32,11 @@ class StagePreviewTest extends TestCase
 
         self::assertArrayNotHasKey('error', $result);
         self::assertStringStartsWith('<iframe data-mageos-pbc-preview=""', $result['content']);
-        self::assertStringContainsString('mageos-pbc-hero', $result['content']);
-        self::assertStringContainsString('Integration hero title', $result['content']);
-        self::assertStringContainsString('Integration eyebrow', $result['content']);
+        // The component's HTML is the iframe's srcdoc, attribute-escaped (spaces included): read it decoded.
+        $document = html_entity_decode($result['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        self::assertStringContainsString('<section class="mageos-pbc mageos-pbc-hero', $document);
+        self::assertStringContainsString('>Integration hero title</h2>', $document);
+        self::assertStringContainsString('>Integration eyebrow</p>', $document);
     }
 
     public function testItRefusesAComponentThatIsNotRegistered(): void

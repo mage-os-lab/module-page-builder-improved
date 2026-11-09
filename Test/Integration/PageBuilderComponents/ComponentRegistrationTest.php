@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MageOS\PageBuilderImproved\Test\Integration\PageBuilderComponents;
 
 use Magento\PageBuilder\Model\ConfigInterface;
+use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Widget\Model\Widget;
 use MageOS\PageBuilderComponents\Model\ComponentRegistry;
@@ -20,9 +21,8 @@ use PHPUnit\Framework\TestCase;
  *
  * Page Builder reads core's content types (view/adminhtml/pagebuilder) through the admin theme, so this runs in
  * the admin area, where the editor reads them.
- *
- * @magentoAppArea adminhtml
  */
+#[AppArea('adminhtml')]
 class ComponentRegistrationTest extends TestCase
 {
     private const COMPONENTS = [

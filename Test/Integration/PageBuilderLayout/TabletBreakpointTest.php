@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MageOS\PageBuilderImproved\Test\Integration\PageBuilderLayout;
 
 use Magento\PageBuilder\Model\ConfigInterface;
+use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
@@ -12,34 +13,33 @@ use PHPUnit\Framework\TestCase;
  * The module's content type XML merges into core's: the layout content types get a Tablet form.
  *
  * Page Builder reads view/adminhtml/pagebuilder files through the admin theme, so this runs in the admin area.
- *
- * @magentoAppArea adminhtml
+ * One test over the content types rather than a data provider: Magento 2.4.8 runs its integration tests with
+ * PHPUnit 10 and Mage-OS 3.x with PHPUnit 12, which no longer reads `@dataProvider`.
  */
+#[AppArea('adminhtml')]
 class TabletBreakpointTest extends TestCase
 {
     /**
-     * @return array<string, array{string}>
+     * Content type => its Tablet form.
      */
-    public static function contentTypes(): array
-    {
-        return [
-            'row' => ['row'],
-            'column' => ['column'],
-            'column group' => ['column-group'],
-            'tabs' => ['tabs'],
-        ];
-    }
+    private const TABLET_FORMS = [
+        'row' => 'pagebuilder_row_tablet_form',
+        'column' => 'pagebuilder_column_tablet_form',
+        'column-group' => 'pagebuilder_column_group_tablet_form',
+        'tabs' => 'pagebuilder_tabs_tablet_form',
+    ];
 
-    /**
-     * @dataProvider contentTypes
-     * @param string $contentType
-     */
-    public function testTheContentTypeHasATabletForm(string $contentType): void
+    public function testTheLayoutContentTypesHaveATabletForm(): void
     {
         $contentTypes = Bootstrap::getObjectManager()->get(ConfigInterface::class)->getContentTypes();
 
-        self::assertArrayHasKey($contentType, $contentTypes);
-        $form = $contentTypes[$contentType]['breakpoints']['tablet']['form'] ?? null;
-        self::assertSame('pagebuilder_' . str_replace('-', '_', $contentType) . '_tablet_form', $form);
+        foreach (self::TABLET_FORMS as $contentType => $form) {
+            self::assertArrayHasKey($contentType, $contentTypes);
+            self::assertSame(
+                $form,
+                $contentTypes[$contentType]['breakpoints']['tablet']['form'] ?? null,
+                "$contentType has no Tablet form."
+            );
+        }
     }
 }
