@@ -45,6 +45,7 @@ body:
       options:
         - "8.3"
         - "8.4"
+        - "8.5"
         - Other (note below)
     validations:
       required: true

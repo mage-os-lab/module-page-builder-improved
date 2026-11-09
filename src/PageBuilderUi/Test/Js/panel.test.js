@@ -32,7 +32,10 @@ function firstExisting(candidates) {
 const pageBuilderRoot = firstExisting([
     process.argv[2],
     path.join(root, 'vendor/magento/module-page-builder'),
-    path.join(magentoRoot, 'vendor/magento/module-page-builder')
+    path.join(magentoRoot, 'vendor/magento/module-page-builder'),
+    // Mage-OS installs its own package, which replaces magento/module-page-builder.
+    path.join(root, 'vendor/mage-os/module-page-builder'),
+    path.join(magentoRoot, 'vendor/mage-os/module-page-builder')
 ]);
 const knockoutFile = firstExisting([
     process.argv[3],
@@ -43,11 +46,20 @@ const knockoutFile = firstExisting([
 // --- Core's templates the module copies: unchanged since they were copied ---
 
 /**
+ * A template without what differs between the Page Builder releases the module supports (2.2.6, 2.2.7) but
+ * changes nothing on the page: line endings and trailing spaces, the license comment at the top (Magento's in
+ * 2.2.6, Adobe's in 2.2.7), and a slash before `>` (2.2.7 dropped the one closing the search input in panel.html;
+ * HTML ignores that slash, so both parse the same).
+ *
  * @param {String} file
  * @returns {String}
  */
 function readNormalized(file) {
-    return fs.readFileSync(file, 'utf8').split(/\r?\n/).map((line) => line.replace(/\s+$/, '')).join('\n');
+    return fs.readFileSync(file, 'utf8')
+        .replace(/^\s*<!--[\s\S]*?-->\s*/, '')
+        .split(/\r?\n/)
+        .map((line) => line.replace(/\s+$/, '').replace(/\s*\/>/g, '>'))
+        .join('\n');
 }
 
 /**

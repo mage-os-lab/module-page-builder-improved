@@ -1,0 +1,181 @@
+name: Check Extension
+
+on:
+  push:
+    # dev is the default branch today; main is listed so CI keeps running if the default branch is renamed
+    # when the repository moves to the mage-os org.
+    branches: [main, dev]
+  # Every pull request, not only those targeting the default branch: a PR stacked on another feature branch is
+  # exactly the change most worth checking, and filtering on the base branch silently gives it no CI at all.
+  pull_request:
+
+# No job here writes to the repository; a compromised action or dependency gets a read-only token.
+permissions:
+  contents: read
+
+# Actions and the reusable workflow are pinned to commit SHAs (tags can be moved); update the SHA and its version
+# comment together. The reusable workflow references its own inner actions by tag, which this pin doesn't pin.
+#
+# Versions: composer.json pins magento/module-page-builder to ~2.2.6.0 || ~2.2.7.0 (the modules' mixins override
+# private Page Builder APIs, see README.md): Magento Open Source 2.4.8 and 2.4.9, Mage-OS 1.3 to 3.x. A Mage-OS
+# release with a newer Page Builder fails the check-extension job below until the package supports it.
+jobs:
+  # Resolved fresh on every run, since this repo keeps no lock file: it audits what a store installing the
+  # package today would get. Abandoned packages are reported, not failed on, because the ones flagged come from
+  # Magento core, which this package cannot change.
+  composer-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Resolve dependencies without installing them
+        run: composer update --no-install --no-interaction --no-progress
+      - name: Audit resolved dependencies
+        run: composer audit --locked --no-dev --abandoned=report
+
+  # The newest Mage-OS release (3.x: upstream 2.4.9, Page Builder 2.2.7).
+  compute-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.supported.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: graycoreio/github-actions-magento2/supported-version@4de1565d1732187111b6d2eeb23c0ee3a9fc23b7 # v8.12.0
+        id: supported
+        with:
+          project: mage-os
+          kind: latest
+
+  # The oldest combination composer.json allows: Magento Open Source 2.4.8 (magento/framework 103.0.8) on PHP
+  # 8.3, with Page Builder 2.2.6. The Mage-OS matrix above runs the newest release on the PHP version the action
+  # pairs with it, so without this the floor would never see the compile and integration jobs. Raise it together with the magento/framework and php
+  # constraints, never on its own.
+  compute-lowest-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.lowest.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: graycoreio/github-actions-magento2/supported-version@4de1565d1732187111b6d2eeb23c0ee3a9fc23b7 # v8.12.0
+        id: supported
+        with:
+          project: magento-open-source
+          kind: custom
+          custom_versions: 'magento/project-community-edition:2.4.8'
+      - name: Pin the matrix to the lowest PHP version composer.json allows
+        id: lowest
+        env:
+          MATRIX: ${{ steps.supported.outputs.matrix }}
+        run: |
+          echo "$MATRIX" | jq .
+          echo "matrix=$(echo "$MATRIX" | jq -c 'walk(if type == "object" and has("php") then .php = "8.3" else . end)')" >> "$GITHUB_OUTPUT"
+
+  # PHPStan (level 8), PHP-CS-Fixer and PHPCS, standalone: they only need the framework classes on the
+  # autoloader, not a working install. bitexpert/phpstan-magento resolves the generated classes (*Factory).
+  # Across the PHP range composer.json claims to support.
+  static-analysis:
+    name: Static analysis (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Install dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=github
+      - name: Run PHP-CS-Fixer
+        run: composer test:cs-fixer
+      - name: Run PHPCS
+        run: composer test:phpcs
+
+  # The reusable workflow's unit job looks for tests in the package's root Test/Unit; this package's live in
+  # src/<Module>/Test/Unit, one directory per module, so they run here (see .github/check-extension.json). The
+  # JavaScript tests read core's Page Builder and Rule scripts from vendor/, so they run after the same install.
+  # Against both Page Builder releases composer.json allows: the tests check the mixins and the copied templates
+  # against core's code. Composer picks the newest release the PHP version allows, so each entry asks for its
+  # release, with the framework it ships with (Magento 2.4.8's or 2.4.9's).
+  unit-tests:
+    name: Unit and JavaScript tests (PHP ${{ matrix.php }}, Page Builder ${{ matrix.page-builder }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            page-builder: '2.2.6'
+            framework: '103.0.8'
+          - php: '8.4'
+            page-builder: '2.2.6'
+            framework: '103.0.8'
+          - php: '8.4'
+            page-builder: '2.2.7'
+            framework: '103.0.9'
+          - php: '8.5'
+            page-builder: '2.2.7'
+            framework: '103.0.9'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Install dependencies
+        env:
+          PAGE_BUILDER: ${{ matrix.page-builder }}
+          FRAMEWORK: ${{ matrix.framework }}
+        run: >-
+          composer update --no-interaction --no-progress --prefer-dist
+          --with "magento/module-page-builder:~$PAGE_BUILDER.0" --with "magento/framework:~$FRAMEWORK.0"
+      - name: Show the Page Builder release installed
+        run: composer show magento/module-page-builder | grep -E '^versions'
+      - name: Run unit tests
+        run: composer test:unit
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - name: Install the JavaScript tests' dependencies
+        run: npm install --no-save --no-package-lock knockout@3.5.1 requirejs@2.3.7 underscore@1.13.8 puppeteer@24.10.0
+      - name: Run JavaScript tests
+        run: composer test:js
+      # In headless Chrome: stage preview sizing and the empty preview; the layout settings with core's style code.
+      - name: Run browser tests
+        run: |
+          node src/PageBuilderComponents/Test/Js/browser.test.js
+          node src/PageBuilderLayout/Test/Js/browser.test.js
+
+  # Installs the package into a real store: DI compile, Magento's coding standard, and the integration tests in
+  # Test/Integration against a real database.
+  check-extension:
+    needs: compute-matrix
+    uses: graycoreio/github-actions-magento2/.github/workflows/check-extension.yaml@4de1565d1732187111b6d2eeb23c0ee3a9fc23b7 # v8.12.0
+    with:
+      matrix: ${{ needs.compute-matrix.outputs.matrix }}
+      # The default mirror (https://mirror.mage-os.org/) only proxies magento/* packages; the
+      # mage-os/project-community-edition metapackage is published to https://repo.mage-os.org/.
+      magento_repository: https://repo.mage-os.org/
+
+  check-extension-lowest:
+    needs: compute-lowest-matrix
+    uses: graycoreio/github-actions-magento2/.github/workflows/check-extension.yaml@4de1565d1732187111b6d2eeb23c0ee3a9fc23b7 # v8.12.0
+    with:
+      matrix: ${{ needs.compute-lowest-matrix.outputs.matrix }}

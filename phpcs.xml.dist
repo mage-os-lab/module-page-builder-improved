@@ -28,4 +28,5 @@
     <file>src/PageBuilderUi/Test</file>
     <file>src/PageBuilderUi/ViewModel</file>
     <file>src/PageBuilderUi/view/adminhtml/templates</file>
+    <file>Test/Integration</file>
 </ruleset>

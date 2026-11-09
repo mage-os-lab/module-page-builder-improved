@@ -35,8 +35,9 @@ class Hero extends AbstractComponent
 
 ## Requirements
 
-- PHP 8.3 or 8.4
-- Magento Open Source / Mage-OS 2.4.8, with Page Builder 2.2.6 (see the package README)
+- Magento Open Source 2.4.8 or 2.4.9, or Mage-OS 1.3 to 3.x, with Page Builder 2.2.6 or 2.2.7 (see the package
+  README)
+- PHP 8.3 or 8.4, or 8.5 on Magento 2.4.9 / Mage-OS 3.x
 
 ## Installation
 

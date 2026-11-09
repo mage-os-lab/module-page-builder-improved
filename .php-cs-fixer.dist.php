@@ -28,6 +28,7 @@ return (new PhpCsFixer\Config())
                 'src/PageBuilderUi/Plugin',
                 'src/PageBuilderUi/Test',
                 'src/PageBuilderUi/ViewModel',
+                'Test/Integration',
             ])
             ->notPath('#/registration\.php$#')
             ->notPath('#(^|/)Screenshots/#')

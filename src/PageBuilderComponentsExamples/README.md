@@ -76,7 +76,7 @@ Primary color and centered, or dark and split (text left, buttons right):
 
 ## Requirements
 
-- PHP 8.3 or 8.4
+- PHP 8.3 or 8.4, or 8.5 on Magento 2.4.9 / Mage-OS 3.x
 - `MageOS_PageBuilderComponents`, in the same package (`mage-os/module-page-builder-improved`)
 
 ## Installation

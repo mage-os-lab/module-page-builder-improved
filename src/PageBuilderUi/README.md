@@ -137,6 +137,6 @@ The scenarios and their checks are in `Test/Screenshots/shot.js`;
 
 `view/adminhtml/web/template/page-builder.html` and `panel.html` are copies of Magento_PageBuilder's, changed.
 `Test/Js/_files/core-templates/` keeps core's versions they were copied from (magento/module-page-builder
-2.2.6-p5), and `Test/Js/panel.test.js` fails when the installed core templates differ from them, with the lines
+2.2.6-p5; 2.2.7's only differ in their license comment and an `<input>`'s closing slash, which the test ignores), and `Test/Js/panel.test.js` fails when the installed core templates differ from them, with the lines
 core changed. To pass it again, re-sync the copy: bring core's change into the module's template, then copy the
 new core template into `Test/Js/_files/core-templates/` (as `<name>.html.txt`).

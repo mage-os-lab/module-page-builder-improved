@@ -1,6 +1,6 @@
 # Mage-OS Page Builder Improved
 
-[![CI](https://github.com/mage-os-lab/module-page-builder-improved/actions/workflows/ci.yml/badge.svg)](https://github.com/mage-os-lab/module-page-builder-improved/actions/workflows/ci.yml)
+[![CI](https://github.com/mage-os-lab/module-page-builder-improved/actions/workflows/check-extension.yaml/badge.svg)](https://github.com/mage-os-lab/module-page-builder-improved/actions/workflows/check-extension.yaml)
 [![License: OSL-3.0](https://img.shields.io/badge/license-OSL--3.0-blue.svg)](LICENSE)
 
 `mage-os/module-page-builder-improved`: one composer package with the Mage-OS modules that improve core Page
@@ -17,14 +17,14 @@ Builder. Install it to get them all; enable the ones you want.
 
 ## Requirements
 
-- PHP 8.3 or 8.4
-- Magento Open Source / Mage-OS 2.4.8, with Page Builder 2.2.6 (any 2.2.6 patch release)
+- Magento Open Source 2.4.8 or Mage-OS 1.3 to 2.x, with Page Builder 2.2.6 (any patch release), on PHP 8.3 or 8.4
+- Magento Open Source 2.4.9 or Mage-OS 3.x, with Page Builder 2.2.7, on PHP 8.3, 8.4 or 8.5
 
-`composer.json` pins `magento/module-page-builder` to `~2.2.6.0`, the version the modules are tested with, on
-purpose: their mixins override private Page Builder APIs (such as `initListeners`, `populateContentTypes` and
-`toggleTemplateManger`), and `src/PageBuilderUi/Test/Js/panel.test.js` checks core's `page-builder.html` and
-`panel.html` against snapshots of 2.2.6-p5. Magento 2.4.9 and PHP 8.5 need Page Builder 2.2.7: supporting them
-means re-syncing the overridden code and the snapshots with 2.2.7 first, then widening the constraint.
+`composer.json` pins `magento/module-page-builder` to `~2.2.6.0 || ~2.2.7.0`, the versions the modules are tested
+with, on purpose: their mixins override private Page Builder APIs (such as `initListeners`, `populateContentTypes`
+and `toggleTemplateManger`), and `src/PageBuilderUi/Test/Js/panel.test.js` checks core's `page-builder.html` and
+`panel.html` against snapshots of the templates the module's copies are based on. Supporting a newer Page Builder
+means checking those overridden APIs and templates against it first, then widening the constraint.
 
 ## Installation
 
@@ -59,8 +59,12 @@ node src/PageBuilderLayout/Test/Js/browser.test.js
 
 Each module's README has its own checks, such as PageBuilderUi's screenshots.
 
-CI (`.github/workflows/ci.yml`) runs these on PHP 8.3 and 8.4, and graycoreio's check-extension workflow (install,
-DI compile, coding standard) on Magento 2.4.8.
+CI (`.github/workflows/check-extension.yaml`) runs these on PHP 8.3, 8.4 and 8.5 (the unit and JavaScript tests with
+Page Builder 2.2.6 and with 2.2.7), plus `composer audit`, and graycoreio's check-extension workflow on the latest
+Mage-OS and on Magento Open Source 2.4.8 with PHP 8.3 (the lowest versions `composer.json` allows): installation, DI compilation, Magento's coding standard and the integration tests in
+`Test/Integration`. Those need a full Magento install with a database: run them from the store's
+`dev/tests/integration` with a test suite pointing at `vendor/mage-os/module-page-builder-improved/Test/Integration`.
+A Sansec eComscan security scan runs on every push and pull request too.
 
 ## Changelog
 
@@ -77,7 +81,8 @@ the checks and what to expect are in [CONTRIBUTING.md](CONTRIBUTING.md). Partici
 
 ## Security
 
-Please don't open a public issue for a vulnerability: see [SECURITY.md](SECURITY.md) for the private advisory flow.
+Please don't open a public issue for a vulnerability: email security@mage-os.org, or see
+[SECURITY.md](SECURITY.md) for the private advisory flow.
 
 ## Attribution
 

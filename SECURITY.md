@@ -9,11 +9,15 @@
 
 ## Reporting a vulnerability
 
-Please don't open a public issue for a security problem. Use GitHub's private advisory flow instead:
+Please don't open a public issue for a security problem. Report it privately, in either of these ways:
 
-1. Go to https://github.com/mage-os-lab/module-page-builder-improved/security/advisories/new
-2. Give it a concise title, and a description with the steps to reproduce it.
-3. Submit. The maintainers are notified privately.
+- **Email security@mage-os.org** (preferred). It reaches the Mage-OS security team, who follow up with the
+  maintainers, so a report is handled even when a maintainer is unavailable. Include a concise title, the
+  affected version, and the steps to reproduce it.
+- **GitHub's private advisory flow**:
+  1. Go to https://github.com/mage-os-lab/module-page-builder-improved/security/advisories/new
+  2. Give it a concise title, and a description with the steps to reproduce it.
+  3. Submit. The maintainers are notified privately.
 
 ## What to expect
 
