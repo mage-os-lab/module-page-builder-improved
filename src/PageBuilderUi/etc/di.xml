@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- The "Edit with Page Builder" plugins of the CMS pages' and blocks' grids, applied in etc/adminhtml/di.xml.
+         Declared here, globally, not with them: setup:di:compile resolves plugin types with the global object
+         manager config only, and fails with "Plugin class ... doesn't exist" on a virtual type declared in an
+         area's di.xml. -->
+    <virtualType name="MageOS\PageBuilderUi\Plugin\AddEditWithPageBuilderAction\CmsPage"
+                 type="MageOS\PageBuilderUi\Plugin\AddEditWithPageBuilderAction">
+        <arguments>
+            <argument name="editUrlPath" xsi:type="string">cms/page/edit</argument>
+            <argument name="idField" xsi:type="string">page_id</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MageOS\PageBuilderUi\Plugin\AddEditWithPageBuilderAction\CmsBlock"
+                 type="MageOS\PageBuilderUi\Plugin\AddEditWithPageBuilderAction">
+        <arguments>
+            <argument name="editUrlPath" xsi:type="string">cms/block/edit</argument>
+            <argument name="idField" xsi:type="string">block_id</argument>
+        </arguments>
+    </virtualType>
+</config>
