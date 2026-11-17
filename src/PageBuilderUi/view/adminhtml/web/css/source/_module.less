@@ -348,9 +348,16 @@
 
             .menu-section-title {
                 align-items: center;
+                background: none;
                 border-bottom: 0;
+                border-radius: 0;
                 display: flex;
+                margin: 0;
                 padding: 16px 16px 8px;
+
+                &:hover {
+                    background: none;
+                }
 
                 // Core's caret, drawn on the heading.
                 :before {
@@ -379,6 +386,11 @@
 
             &.active {
                 .menu-section-title {
+                    &,
+                    &:hover {
+                        background: none;
+                    }
+
                     h4 {
                         color: @mageos-ui__text-muted;
                     }
@@ -825,9 +837,8 @@
         padding: 0;
         width: 40px;
 
-        // Core's icons are white, for a dark button.
         img {
-            filter: invert(1);
+            filter: brightness(0);
             height: 18px;
             opacity: .85;
             width: 24px;
@@ -837,7 +848,7 @@
             background: @mageos-ui__text;
 
             img {
-                filter: none;
+                filter: brightness(0) invert(1);
                 opacity: 1;
             }
         }
@@ -878,9 +889,19 @@
             }
 
             > i {
-                color: inherit;
-                display: inline-flex;
-                padding: 0;
+                &,
+                &:hover,
+                &:focus,
+                &:active {
+                    background: none;
+                    border: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    color: inherit;
+                    display: inline-flex;
+                    margin: 0;
+                    padding: 0;
+                }
             }
         }
     }
@@ -1071,6 +1092,10 @@
         position: sticky;
         top: 0;
         z-index: 3;
+
+        .page-main-actions {
+            padding: 0;
+        }
     }
 
     .modal-title {
