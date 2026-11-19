@@ -20,10 +20,10 @@
 @mageos-form__header-height: 60px;
 @mageos-ui__error: #e22626;
 
-// Magento's orange, as the admin's primary buttons.
-@mageos-ui__accent: #eb5202;
-@mageos-ui__accent-dark: #ba4000;
-@mageos-ui__accent-light: rgba(235, 82, 2, .08);
+// The admin theme's primary buttons: Mage-OS backend's green, M137's near-black, or a custom theme's.
+@mageos-ui__accent: @button-primary__background-color;
+@mageos-ui__accent-dark: @button-primary__hover__background-color;
+@mageos-ui__accent-light: fade(@mageos-ui__accent, 8%);
 @mageos-ui__text: #1e1e1e;
 @mageos-ui__text-muted: #757575;
 @mageos-ui__border: #e0e0e0;
@@ -726,7 +726,10 @@
 //  Elements on the stage, from the tree
 //  _____________________________________________
 
-.mageos-tree-highlight {
+// The admin theme's .pagebuilder-content-type.pagebuilder-content-type-affordance makes containers' outline
+// transparent (Columns): outrank it.
+.mageos-tree-highlight,
+.pagebuilder-stage .pagebuilder-content-type.mageos-tree-highlight {
     outline: 1.5px solid @mageos-ui__accent;
     outline-offset: -1.5px;
 }
@@ -886,6 +889,7 @@
 
             &:hover {
                 background: @mageos-ui__hover;
+                color: @mageos-ui__text;
             }
 
             > i {
@@ -927,6 +931,7 @@
 
         &:hover {
             background: @mageos-ui__accent-light;
+            color: @mageos-ui__accent;
         }
     }
 
@@ -978,6 +983,7 @@
 
         &:hover {
             background: @mageos-ui__accent-dark;
+            color: @mageos-ui__surface;
         }
 
         &:focus-visible {

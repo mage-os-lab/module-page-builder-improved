@@ -302,6 +302,24 @@ define([
         };
 
         /**
+         * The node's element on the stage. Core sets wrapperElement from the wrapper template, which column-group
+         * and column-line don't render their children with: Column Line and Column only have the jQuery element
+         * their own preview keeps (bindInteractions, initColumn).
+         *
+         * @param {Object} node
+         * @returns {HTMLElement|null}
+         */
+        function stageElement(node) {
+            var preview = node.contentType.preview;
+
+            if (!preview) {
+                return null;
+            }
+
+            return preview.wrapperElement || (preview.element && preview.element[0]) || null;
+        }
+
+        /**
          * Select the node, and show its element on the stage.
          *
          * @param {Object} node
@@ -317,7 +335,7 @@ define([
          * @param {Object} node
          */
         Panel.prototype.focusNode = function (node) {
-            var element = node.contentType.preview && node.contentType.preview.wrapperElement;
+            var element = stageElement(node);
 
             if (!element) {
                 return;
@@ -340,7 +358,7 @@ define([
          * @param {Boolean} on
          */
         Panel.prototype.highlightNode = function (node, on) {
-            var element = node.contentType.preview && node.contentType.preview.wrapperElement;
+            var element = stageElement(node);
 
             this.clearHighlight();
 

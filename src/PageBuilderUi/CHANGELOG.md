@@ -15,6 +15,14 @@ for the version (composer.json carries no version field).
   validation, the next page, block or product opened no longer jumps into full screen.
 - The Templates menu no longer stacks document handlers when toggled fast; Escape closes it.
 - The panel's handlers on the stage are replaced, not added to, when it renders again.
+- Hovering Columns, Column Line and Column in the "Current tree" outlines them on the stage, and clicking Column
+  Line and Column scrolls to and flashes them. The admin theme's transparent outline on containers no longer
+  wins, and the elements core gives no `wrapperElement` fall back to their preview's own element.
+- The panel's buttons, selected states and outlines take the admin theme's primary button colour
+  (`@button-primary__background-color`), instead of Magento's orange: green with Mage-OS's backend theme,
+  near-black with M137.
+- "Save page", "Templates" and the full screen button keep their text colour on hover in full screen, where
+  core's header button hover made "Save page"'s label the colour of its background.
 
 ### Changed
 
