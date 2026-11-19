@@ -15,6 +15,8 @@ for the version (composer.json carries no version field).
   validation, the next page, block or product opened no longer jumps into full screen.
 - The Templates menu no longer stacks document handlers when toggled fast; Escape closes it.
 - The panel's handlers on the stage are replaced, not added to, when it renders again.
+- "Confirm Item Removal" takes the focus on Cancel and closes on Escape, like Cancel, when removing from the
+  stage's toolbar or the tree. A tree action's dialog gives the focus back to it as it closes.
 
 ### Changed
 

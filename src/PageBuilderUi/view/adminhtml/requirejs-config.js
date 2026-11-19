@@ -12,6 +12,9 @@ var config = {
             },
             'Magento_PageBuilder/js/modal/modal': {
                 'MageOS_PageBuilderUi/js/modal/modal-mixin': true
+            },
+            'Magento_PageBuilder/js/modal/dismissible-confirm': {
+                'MageOS_PageBuilderUi/js/modal/dismissible-confirm-mixin': true
             }
         }
     }

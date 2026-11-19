@@ -578,7 +578,8 @@
         &:hover,
         &:focus-within {
             .mageos-tree-actions {
-                display: flex;
+                opacity: 1;
+                pointer-events: auto;
             }
         }
 
@@ -656,13 +657,16 @@
         white-space: nowrap;
     }
 
-    // Over the end of the row, on white, so the text under it doesn't show through.
+    // Over the end of the row, on white, so the text under it doesn't show through. Hidden with opacity rather
+    // than display, so its buttons can still take the focus: a dialog one opens gives it back as it closes.
     .mageos-tree-actions {
         background: @mageos-ui__surface;
         border-radius: @mageos-ui__radius;
         box-shadow: 0 0 0 1px @mageos-ui__border, 0 1px 3px rgba(0, 0, 0, .08);
-        display: none;
+        display: flex;
+        opacity: 0;
         padding: 0 2px;
+        pointer-events: none;
         position: absolute;
         right: 4px;
         top: 50%;
