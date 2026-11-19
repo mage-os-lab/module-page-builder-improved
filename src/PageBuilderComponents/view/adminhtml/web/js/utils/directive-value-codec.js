@@ -17,7 +17,8 @@ define([], function () {
             '%': '^6',
             '<': '^7',
             '>': '^8',
-            '&': '^9'
+            '&': '^9',
+            '$': '^a'
         },
         DECODE = {};
 
@@ -31,19 +32,19 @@ define([], function () {
          * @returns {String}
          */
         encode: function (value) {
-            return String(value).replace(/[\^"'{}\\%<>&]/g, function (character) {
+            return String(value).replace(/[\^"'{}\\%<>&$]/g, function (character) {
                 return ENCODE[character];
             });
         },
 
         /**
-         * A "^" not followed by a digit is kept as it is.
+         * A "^" not followed by a digit or "a" is kept as it is.
          *
          * @param {*} value
          * @returns {String}
          */
         decode: function (value) {
-            return String(value).replace(/\^[0-9]/g, function (sequence) {
+            return String(value).replace(/\^[0-9a]/g, function (sequence) {
                 return DECODE[sequence];
             });
         }

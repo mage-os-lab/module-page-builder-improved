@@ -243,7 +243,7 @@ class ComponentRendererTest extends TestCase
 
     /**
      * After the theme's stylesheets, so its rules win: a transparent document, so the row's background shows
-     * through; no body margin and a flow root, as the stage measures the body.
+     * through; no body margin, a flow root and the content's height, as the stage measures the body.
      *
      * @param string $document
      * @return void
@@ -253,7 +253,8 @@ class ComponentRendererTest extends TestCase
         $style = substr($document, (int) strpos($document, '<style>'));
         self::assertGreaterThan(strrpos($document, '<link'), strpos($document, '<style>'));
         self::assertStringContainsString(
-            'html,body{background:transparent!important;overflow:hidden!important}',
+            'html,body{background:transparent!important;overflow:hidden!important;'
+            . 'height:auto!important;min-height:0!important}',
             $style
         );
         self::assertStringContainsString('body{margin:0!important;display:flow-root!important}', $style);
