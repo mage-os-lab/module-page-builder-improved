@@ -115,9 +115,9 @@ confirmations built on the same dialog (applying a template, the nesting warning
 
 ## Customising
 
-The colours and sizes are LESS variables at the top of `_module.less`: `@mageos-ui__accent` (Magento's orange,
-`#eb5202`), the text, border and hover greys, `@mageos-panel__width`, `@mageos-panel__collapsed-width` and
-`@mageos-form__width`.
+The colours and sizes are LESS variables at the top of `_module.less`: `@mageos-ui__accent` (the admin theme's
+primary button colour, `@button-primary__background-color`), the text, border and hover greys,
+`@mageos-panel__width`, `@mageos-panel__collapsed-width` and `@mageos-form__width`.
 
 ## Development
 

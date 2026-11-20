@@ -17,6 +17,14 @@ for the version (composer.json carries no version field).
 - The panel's handlers on the stage are replaced, not added to, when it renders again.
 - "Confirm Item Removal" takes the focus on Cancel and closes on Escape, like Cancel, when removing from the
   stage's toolbar or the tree. A tree action's dialog gives the focus back to it as it closes.
+- Hovering Columns, Column Line and Column in the "Current tree" outlines them on the stage, and clicking Column
+  Line and Column scrolls to and flashes them. The admin theme's transparent outline on containers no longer
+  wins, and the elements core gives no `wrapperElement` fall back to their preview's own element.
+- The panel's buttons, selected states and outlines take the admin theme's primary button colour
+  (`@button-primary__background-color`), instead of Magento's orange: green with Mage-OS's backend theme,
+  near-black with M137.
+- "Save page", "Templates" and the full screen button keep their text colour on hover in full screen, where
+  core's header button hover made "Save page"'s label the colour of its background.
 
 ### Changed
 
