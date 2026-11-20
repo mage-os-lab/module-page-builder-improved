@@ -14,3 +14,4 @@
 /src/*/Test/Js            export-ignore
 /src/*/Test/Screenshots   export-ignore
 /src/*/docs/screenshots   export-ignore
+/Test/End-2-end           export-ignore

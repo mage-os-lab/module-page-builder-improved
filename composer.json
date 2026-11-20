@@ -78,7 +78,8 @@
             "/.release-please-manifest.json",
             "/src/*/Test/Js",
             "/src/*/Test/Screenshots",
-            "/src/*/docs/screenshots"
+            "/src/*/docs/screenshots",
+            "/Test/End-2-end"
         ]
     },
     "config": {
