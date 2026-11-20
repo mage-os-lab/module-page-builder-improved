@@ -57,7 +57,6 @@ test.describe('Components', () => {
         await form.save();
         await editor.savePage();
 
-        // Reopened by hand: Page Builder doesn't reopen after a save (see save-page.spec.ts).
         await editor.open(cmsPage.id);
         form = await editor.editFromTree('mageos_hero');
         await expect(form.field('title')).toHaveValue(title);

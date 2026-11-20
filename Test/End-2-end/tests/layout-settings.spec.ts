@@ -38,12 +38,6 @@ test.describe('Layout settings', () => {
     });
 
     test('Columns: a setting made in the Tablet view applies at tablet widths only', async ({ seedPage, editor, storefront, page }) => {
-        // The Tablet forms (pagebuilder_*_tablet_form, and pagebuilder_column_group_mobile_form) are UI components
-        // without a layout handle (view/adminhtml/layout/<form>.xml): Page Builder loads forms by their handle
-        // (mui/index/render_handle), gets an empty page, and the edit form never opens in the Tablet view. Remove
-        // this line once it is fixed.
-        test.fail(true, 'Known bug: the Tablet forms have no layout handle, so they never load');
-
         const cmsPage = await seedPage(twoColumns(), 'columns-tablet');
 
         await editor.open(cmsPage.id);
@@ -68,12 +62,6 @@ test.describe('Layout settings', () => {
     });
 
     test('Columns: saving them raises no restricted HTML warning', async ({ seedPage, editor }) => {
-        // data-mageos-layout, which marks the column groups saved with the module, is not in the CMS HTML
-        // validator's allowed attributes (Magento_PageBuilder's di.xml adds core's), so every save of a page
-        // with Columns warns "Temporarily allowed to save HTML value that contains restricted elements", and is
-        // refused when cms/wysiwyg/force_valid is on. Remove this line once it is fixed.
-        test.fail(true, 'Known bug: data-mageos-layout is not an allowed attribute for the CMS HTML validator');
-
         const cmsPage = await seedPage(twoColumns(), 'columns-validator');
 
         await editor.open(cmsPage.id);
@@ -94,7 +82,6 @@ test.describe('Layout settings', () => {
         await form.save();
         await editor.savePage();
 
-        // Reopened by hand: Page Builder doesn't reopen after a save (see save-page.spec.ts).
         await editor.open(cmsPage.id);
         form = await editor.editFromTree('row');
         await form.tab('Content Layout').click();
