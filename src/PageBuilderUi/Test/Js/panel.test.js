@@ -509,6 +509,21 @@ const subscription = panel.treeNodes.subscribe(function () {});
 assert.strictEqual(panel.treeNodes().length, 0, 'not on the add tab');
 panel.selectTab('tree');
 assert.strictEqual(outline(panel.treeNodes()), '0:row 1:column 2:heading 2:text 0:row 1:slider 2:slide 2:slide');
+
+// Column Line and Column have no wrapperElement, only the jQuery element their preview keeps.
+const textWrapper = text.preview.wrapperElement;
+const columnElement = {classes: {}, offsetWidth: 0};
+
+text.preview.wrapperElement = null;
+text.preview.element = {0: columnElement, length: 1};
+panel.highlightNode(panel.treeNodes()[3], true);
+assert.strictEqual(columnElement.classes['mageos-tree-highlight'], true, 'falls back to preview.element');
+panel.highlightNode(panel.treeNodes()[3], false);
+assert.strictEqual(columnElement.classes['mageos-tree-highlight'], false);
+panel.focusNode(panel.treeNodes()[3]);
+assert.strictEqual(columnElement.classes['mageos-tree-highlight-flash'], false, 'focus falls back too');
+text.preview.wrapperElement = textWrapper;
+delete text.preview.element;
 assert.strictEqual(JSON.parse(storage['mageos-pagebuilder-panel']).tab, 'tree', 'tab remembered');
 
 // It follows the stage.
