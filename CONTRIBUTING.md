@@ -29,9 +29,11 @@ documentation fixes.
    node src/PageBuilderComponents/Test/Js/browser.test.js
    node src/PageBuilderLayout/Test/Js/browser.test.js
    ```
-   CI runs the same checks, plus `composer audit`, and installs the package into Mage-OS and Magento Open Source
+   A change to what the editor or the storefront does: run the end-to-end suite in `Test/End-2-end` against a store
+   with the package installed (see the README's "End-to-end tests"), and add a test for it there.
+   CI runs the same checks, plus `composer audit`, installs the package into Mage-OS and Magento Open Source
    for DI compilation, Magento's coding standard and the integration tests in `Test/Integration` (they need a full
-   install with a database, see the README).
+   install with a database, see the README), and runs the end-to-end suite against those stores.
 6. A change to the editor or the storefront output: add or update the module's screenshots (each module's README
    says how), and attach them to the pull request.
 7. Keep pull requests small and about one thing.

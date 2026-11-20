@@ -1,0 +1,168 @@
+name: End-2-end
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+# No job here writes to the repository; a compromised action or dependency gets a read-only token.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The oldest Magento composer.json allows (2.4.8, Page Builder 2.2.6), raised together with the
+  # magento/module-page-builder constraint; 2.4.9 (Page Builder 2.2.7); and the newest Mage-OS on the newest
+  # PHP, which follows new releases by itself: one with a Page Builder the constraint doesn't allow fails here
+  # first. Production mode serves the deployed static files, developer mode the fallback: both are covered.
+  e2e-tests:
+    name: E2E (${{ matrix.PLATFORM }}, ${{ matrix.PHP_VERSION }}, ${{ matrix.MAGENTO_MODE }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - PLATFORM: magento2.4.8
+            IMAGE: magento-project-community-edition
+            PHP_VERSION: php83-fpm
+            TAG: php83-fpm-magento2.4.8
+            MAGENTO_MODE: production
+          - PLATFORM: magento2.4.9
+            IMAGE: magento-project-community-edition
+            PHP_VERSION: php84-fpm
+            TAG: php84-fpm-magento2.4.9
+            MAGENTO_MODE: developer
+          - PLATFORM: mage-os-latest
+            IMAGE: mage-os-community-edition
+            PHP_VERSION: newest-php
+            TAG: latest
+            MAGENTO_MODE: production
+    env:
+      BASE_URL: http://localhost/
+      ADMIN_USER: e2e_admin
+      ADMIN_PASSWORD: E2eAdminPassword1
+      ADMIN_PATH: admin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Start the store container
+        run: |
+          mkdir -p magento-logs
+          docker run -d --name store \
+            -p 80:80 \
+            -v "$(pwd)/magento-logs:/data/var/log" \
+            ghcr.io/controlaltdelete-nl/magento2-in-a-box/${{ matrix.IMAGE }}:${{ matrix.TAG }}
+
+      # The uploaded copy is a path repository; should an image ever ship this package, the copy
+      # has to carry the shipped version to satisfy whatever pins it.
+      - name: Upload the module into the container
+        run: |
+          SHIPPED_VERSION=$(docker exec store composer show --format=json mage-os/module-page-builder-improved 2>/dev/null \
+            | jq -r '.versions[0] // empty | ltrimstr("v")' || true)
+          if [ -n "$SHIPPED_VERSION" ]; then
+            echo "The image ships mage-os/module-page-builder-improved $SHIPPED_VERSION"
+            jq --arg version "$SHIPPED_VERSION" '.version = $version' composer.json > /tmp/composer.json
+            mv /tmp/composer.json composer.json
+          fi
+          docker cp $(pwd) store:/data/extensions/
+          docker exec store ./install-composer-package mage-os/module-page-builder-improved:@dev
+
+      - name: Enable the modules
+        run: |
+          docker exec store ./retry "php bin/magento module:enable MageOS_PageBuilderComponents MageOS_PageBuilderComponentsExamples MageOS_PageBuilderLayout MageOS_PageBuilderUi"
+          docker exec store ./retry "php bin/magento setup:upgrade --no-interaction --keep-generated"
+
+      # The admin usage tracking modal and the release notification banner cover the admin on first
+      # login and swallow clicks. The suite signs in with a password and seeds pages through the REST admin
+      # token, which two-factor authentication replaces. Braintree's admin script throws while RequireJS loads
+      # some admin pages on 2.4.9 (see mage-os/module-ai-base's workflow). Not every platform ships all of
+      # these, so only what is enabled goes; before di:compile and static deploy, so neither has to be redone.
+      - name: Disable the first-login admin modals, two-factor authentication and Braintree
+        run: |
+          docker exec store /bin/bash -c '
+            modules=$(bin/magento module:status --enabled \
+              | grep -E "^(Magento_AdminAnalytics|Magento_ReleaseNotification|Magento_AdminAdobeImsTwoFactorAuth|Magento_TwoFactorAuth|PayPal_Braintree.*)$" || true)
+            if [ -n "$modules" ]; then
+              bin/magento module:disable $modules
+            else
+              echo "Nothing to disable."
+            fi
+          '
+
+      - name: Prepare Magento
+        run: |
+          docker exec store /bin/bash ./change-base-url http://localhost/
+          docker exec store ./retry "bin/magento config:set admin/security/session_lifetime 14400"
+          docker exec store ./retry "bin/magento config:set admin/security/admin_account_sharing 1"
+          # The specs open admin pages by URL, which secret keys in admin URLs would redirect to the dashboard.
+          docker exec store ./retry "bin/magento config:set admin/security/use_form_key 0"
+          docker exec store ./retry "bin/magento admin:user:create \
+            --admin-user=${{ env.ADMIN_USER }} \
+            --admin-password=${{ env.ADMIN_PASSWORD }} \
+            --admin-email=e2e@example.com \
+            --admin-firstname=E2E \
+            --admin-lastname=Admin"
+          docker exec store ./retry "php bin/magento setup:di:compile"
+          # The image ships a deployed pub/static, and -f does not overwrite it, so without this the
+          # module's LESS never reaches the admin theme's styles.
+          docker exec store bash -c "rm -rf pub/static/adminhtml pub/static/deployed_version.txt var/view_preprocessed"
+          docker exec store ./retry "php bin/magento setup:static-content:deploy -f"
+          docker exec store ./retry "php bin/magento deploy:mode:set ${{ matrix.MAGENTO_MODE }} --skip-compilation"
+          docker exec store ./retry "bin/magento cache:flush"
+
+      - name: Check that the admin is reachable
+        run: |
+          for attempt in $(seq 1 20); do
+            if curl --fail-with-body --location --max-redirs 5 -s -o /dev/null \
+              -w "admin: %{http_code} after %{num_redirects} redirect(s)\n" \
+              http://localhost/admin/; then
+              exit 0
+            fi
+            echo "not up yet (attempt $attempt), waiting"
+            sleep 5
+          done
+          echo "The admin never became reachable."
+          docker logs store | tail -50
+          exit 1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: Test/End-2-end/package-lock.json
+
+      - name: Install Playwright
+        working-directory: Test/End-2-end
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Type-check the suite
+        working-directory: Test/End-2-end
+        run: npm run typecheck
+
+      - name: Run the end-to-end tests
+        working-directory: Test/End-2-end
+        run: npx playwright test
+
+      - name: Collect Magento logs
+        if: always()
+        run: docker logs store > magento.log 2>&1
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: e2e-${{ matrix.PLATFORM }}-${{ matrix.PHP_VERSION }}-${{ matrix.MAGENTO_MODE }}
+          retention-days: 7
+          path: |
+            Test/End-2-end/test-results
+            Test/End-2-end/playwright-report
+            magento-logs
+            magento.log

@@ -59,12 +59,55 @@ node src/PageBuilderLayout/Test/Js/browser.test.js
 
 Each module's README has its own checks, such as PageBuilderUi's screenshots.
 
+### End-to-end tests
+
+`Test/End-2-end` is one [Playwright](https://playwright.dev) suite for all four modules, run against a live store: it
+opens CMS pages in the admin, edits them with Page Builder (the panel, the tree, the edit form, the header, the
+viewports, the layout settings, the example components), saves them, and checks the result on the storefront.
+
+The store needs the four modules enabled, an admin user the suite signs in as (no two-factor authentication), and
+admin URLs without secret keys, as the suite opens edit pages by their URL:
+
+```
+bin/magento admin:user:create --admin-user=e2e_admin --admin-password=E2eAdminPassword1 \
+    --admin-email=e2e@example.com --admin-firstname=E2E --admin-lastname=Admin
+bin/magento config:set admin/security/use_form_key 0
+```
+
+Then, from `Test/End-2-end`:
+
+```
+npm ci
+npx playwright install chromium
+BASE_URL=https://store.test/ npx playwright test
+```
+
+| Variable            | Default              | |
+|---------------------|----------------------|-|
+| `BASE_URL`          | `http://localhost/`  | The storefront's base URL. |
+| `ADMIN_PATH`        | `admin`              | The admin's front name. |
+| `ADMIN_USER`        | `e2e_admin`          | |
+| `ADMIN_PASSWORD`    | `E2eAdminPassword1`  | |
+| `E2E_CHROMIUM_PATH` |                      | A Chromium to use instead of Playwright's, e.g. `/usr/bin/chromium` on Alpine. |
+
+Each test seeds its own CMS page through the REST API and deletes it afterwards; nothing else on the store is
+changed. `global-setup.ts` checks the store first and says what to fix. `npm run typecheck` type-checks the
+suite.
+
+A test marked `test.fail()` documents a known bug: it passes while the bug is there, and fails once the bug is
+fixed, to have its marker removed.
+
 CI (`.github/workflows/check-extension.yaml`) runs these on PHP 8.3, 8.4 and 8.5 (the unit and JavaScript tests with
 Page Builder 2.2.6 and with 2.2.7), plus `composer audit`, and graycoreio's check-extension workflow on the latest
 Mage-OS and on Magento Open Source 2.4.8 with PHP 8.3 (the lowest versions `composer.json` allows): installation, DI compilation, Magento's coding standard and the integration tests in
 `Test/Integration`. Those need a full Magento install with a database: run them from the store's
 `dev/tests/integration` with a test suite pointing at `vendor/mage-os/module-page-builder-improved/Test/Integration`.
 A Sansec eComscan security scan runs on every push and pull request too.
+
+`.github/workflows/end-2-end.yml` runs the end-to-end suite against stores built from the
+[magento2-in-a-box](https://github.com/controlaltdelete-nl/magento2-in-a-box) images: Magento Open Source 2.4.8
+(Page Builder 2.2.6, production mode), 2.4.9 (Page Builder 2.2.7, developer mode) and the newest Mage-OS
+(production mode).
 
 ## Changelog
 
