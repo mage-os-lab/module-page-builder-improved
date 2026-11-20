@@ -16,10 +16,11 @@ concurrency:
 
 jobs:
   # The oldest Magento composer.json allows (2.4.8, Page Builder 2.2.6), raised together with the
-  # magento/module-page-builder constraint, and the newest Mage-OS on the newest PHP, which follows
-  # new releases by itself: one with a Page Builder the constraint doesn't allow fails here first.
+  # magento/module-page-builder constraint; 2.4.9 (Page Builder 2.2.7); and the newest Mage-OS on the newest
+  # PHP, which follows new releases by itself: one with a Page Builder the constraint doesn't allow fails here
+  # first. Production mode serves the deployed static files, developer mode the fallback: both are covered.
   e2e-tests:
-    name: E2E (${{ matrix.PLATFORM }}, ${{ matrix.PHP_VERSION }})
+    name: E2E (${{ matrix.PLATFORM }}, ${{ matrix.PHP_VERSION }}, ${{ matrix.MAGENTO_MODE }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,11 +30,19 @@ jobs:
             IMAGE: magento-project-community-edition
             PHP_VERSION: php83-fpm
             TAG: php83-fpm-magento2.4.8
+            MAGENTO_MODE: production
+          - PLATFORM: magento2.4.9
+            IMAGE: magento-project-community-edition
+            PHP_VERSION: php84-fpm
+            TAG: php84-fpm-magento2.4.9
+            MAGENTO_MODE: developer
           - PLATFORM: mage-os-latest
             IMAGE: mage-os-community-edition
             PHP_VERSION: newest-php
             TAG: latest
+            MAGENTO_MODE: production
     env:
+      BASE_URL: http://localhost/
       ADMIN_USER: e2e_admin
       ADMIN_PASSWORD: E2eAdminPassword1
       ADMIN_PATH: admin
@@ -70,15 +79,19 @@ jobs:
           docker exec store ./retry "php bin/magento setup:upgrade --no-interaction --keep-generated"
 
       # The admin usage tracking modal and the release notification banner cover the admin on first
-      # login and swallow clicks. Not every platform ships both, so only what is enabled goes.
-      - name: Disable the first-login admin modals
+      # login and swallow clicks. The suite signs in with a password and seeds pages through the REST admin
+      # token, which two-factor authentication replaces. Braintree's admin script throws while RequireJS loads
+      # some admin pages on 2.4.9 (see mage-os/module-ai-base's workflow). Not every platform ships all of
+      # these, so only what is enabled goes; before di:compile and static deploy, so neither has to be redone.
+      - name: Disable the first-login admin modals, two-factor authentication and Braintree
         run: |
           docker exec store /bin/bash -c '
-            modules=$(bin/magento module:status --enabled | grep -E "^(Magento_AdminAnalytics|Magento_ReleaseNotification)$" || true)
+            modules=$(bin/magento module:status --enabled \
+              | grep -E "^(Magento_AdminAnalytics|Magento_ReleaseNotification|Magento_AdminAdobeImsTwoFactorAuth|Magento_TwoFactorAuth|PayPal_Braintree.*)$" || true)
             if [ -n "$modules" ]; then
               bin/magento module:disable $modules
             else
-              echo "No first-login modal modules enabled; nothing to disable."
+              echo "Nothing to disable."
             fi
           '
 
@@ -100,6 +113,7 @@ jobs:
           # module's LESS never reaches the admin theme's styles.
           docker exec store bash -c "rm -rf pub/static/adminhtml pub/static/deployed_version.txt var/view_preprocessed"
           docker exec store ./retry "php bin/magento setup:static-content:deploy -f"
+          docker exec store ./retry "php bin/magento deploy:mode:set ${{ matrix.MAGENTO_MODE }} --skip-compilation"
           docker exec store ./retry "bin/magento cache:flush"
 
       - name: Check that the admin is reachable
@@ -120,27 +134,32 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: Test/End-2-end/package-lock.json
 
       - name: Install Playwright
+        working-directory: Test/End-2-end
         run: |
-          cd Test/End-2-end
-          npm install
+          npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: Type-check the suite
+        working-directory: Test/End-2-end
+        run: npm run typecheck
+
       - name: Run the end-to-end tests
-        run: |
-          cd Test/End-2-end
-          BASE_URL="http://localhost/" npx playwright test
+        working-directory: Test/End-2-end
+        run: npx playwright test
 
       - name: Collect Magento logs
         if: always()
         run: docker logs store > magento.log 2>&1
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: e2e-${{ matrix.PLATFORM }}-${{ matrix.PHP_VERSION }}
+          name: e2e-${{ matrix.PLATFORM }}-${{ matrix.PHP_VERSION }}-${{ matrix.MAGENTO_MODE }}
           retention-days: 7
           path: |
             Test/End-2-end/test-results
