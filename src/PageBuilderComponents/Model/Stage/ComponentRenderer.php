@@ -42,9 +42,12 @@ class ComponentRenderer implements RendererInterface
      *   colours the page body, which in the iframe sits right behind the component);
      * - no body margin, and a flow root so children's margins stay inside the body the stage measures;
      * - no scrolling: the iframe is as tall as its content, and a theme's `overflow-y: scroll` on the body
-     *   (Hyvä's) would otherwise show a scrollbar in every preview and narrow it.
+     *   (Hyvä's) would otherwise show a scrollbar in every preview and narrow it;
+     * - the content's height: the stage sets the iframe's height from the body's, so a theme's
+     *   `html, body { height: 100% }` (Luma's) would keep every preview at the iframe's default 150px.
      */
-    private const FRAME_STYLE = 'html,body{background:transparent!important;overflow:hidden!important}'
+    private const FRAME_STYLE = 'html,body{background:transparent!important;overflow:hidden!important;'
+        . 'height:auto!important;min-height:0!important}'
         . 'body{margin:0!important;display:flow-root!important}';
 
     private const HYVA_STYLESHEETS = ['css/styles.css' => ''];

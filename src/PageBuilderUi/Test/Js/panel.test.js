@@ -686,6 +686,10 @@ assert.strictEqual(loadEditWithPageBuilder('/admin/cms/block/edit/block_id/5/', 
 [
     [cmsPage, '/admin/cms/page/edit/page_id/5/key/abc/', true],
     [cmsPage, '/admin/cms/page/edit/page_id/5/', true],
+    // A CMS page's save redirects with back/edit: "edit" there is a parameter's value, not the form action.
+    [cmsPage, '/admin/cms/page/edit/page_id/5/back/edit/', true],
+    [cmsPage, '/admin/cms/page/edit/page_id/50/back/edit/key/abc/', false],
+    ['/admin/cms/page/new/key/a/', '/admin/cms/page/edit/page_id/9/back/edit/key/b/', true],
     [cmsPage, '/admin/cms/page/edit/page_id/50/key/abc/', false],
     ['/admin/catalog/product/edit/id/12/key/a/', '/admin/catalog/product/edit/id/12/set/4/key/a/', true],
     ['/admin/catalog/product/edit/id/12/set/4/key/a/', '/admin/catalog/product/edit/set/4/id/12/key/a/', true],

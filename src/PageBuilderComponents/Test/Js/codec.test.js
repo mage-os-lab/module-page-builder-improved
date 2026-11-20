@@ -27,7 +27,7 @@ vectors.forEach(function (vector, index) {
     try {
         assert.strictEqual(codec.encode(vector.decoded), vector.encoded, 'encode');
         assert.strictEqual(codec.decode(vector.encoded), vector.decoded, 'decode');
-        assert.ok(!/["'{}\\%<>&]/.test(codec.encode(vector.decoded)), 'no unsafe character');
+        assert.ok(!/["'{}\\%<>&$]/.test(codec.encode(vector.decoded)), 'no unsafe character');
     } catch (e) {
         failures++;
         console.error('vector ' + index + ': ' + e.message);

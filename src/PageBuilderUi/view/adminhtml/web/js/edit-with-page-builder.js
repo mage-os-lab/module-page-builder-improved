@@ -44,11 +44,14 @@ define([
         if (index !== -1) {
             segments.splice(index, 2);
         }
-        index = segments.length - 1;
-        while (index >= 0 && FORM_ACTIONS.indexOf(segments[index]) === -1) {
-            index--;
+        // The first form action followed by name and value pairs: a parameter's value can be a form action too,
+        // as in the .../page_id/9/back/edit/ a CMS page's save redirects to.
+        index = 0;
+        while (index < segments.length
+            && (FORM_ACTIONS.indexOf(segments[index]) === -1 || (segments.length - index - 1) % 2 !== 0)) {
+            index++;
         }
-        if (index < 0) {
+        if (index === segments.length) {
             return {base: segments.join('/'), action: '', params: params};
         }
         rest = segments.slice(index + 1);

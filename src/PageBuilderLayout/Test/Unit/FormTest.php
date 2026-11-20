@@ -26,6 +26,33 @@ class FormTest extends TestCase
     }
 
     /**
+     * Page Builder loads an element's form by its layout handle (mui/index/render_handle): a form without one
+     * renders as an empty page, and its edit form never opens. Core has the handles of its own forms; the module
+     * adds those of the forms it brings (the Tablet views', and the Columns' Mobile view).
+     */
+    public function testEveryFormHasTheLayoutHandlePageBuilderLoadsItBy(): void
+    {
+        $forms = glob(self::module('view/adminhtml/ui_component/*.xml')) ?: [];
+        self::assertNotEmpty($forms);
+        foreach ($forms as $path) {
+            $form = basename($path, '.xml');
+            $handle = "view/adminhtml/layout/$form.xml";
+            $file = is_file(self::module($handle)) ? self::module($handle) : self::core($handle);
+
+            self::assertFileExists($file, "$form has no layout handle, in the module or in core.");
+            $layout = self::assertValidAgainstSchema(
+                (string) file_get_contents($file),
+                'urn:magento:framework:View/Layout/etc/page_configuration.xsd'
+            );
+            $names = [];
+            foreach ($layout->getElementsByTagName('uiComponent') as $component) {
+                $names[] = $component->getAttribute('name');
+            }
+            self::assertSame([$form], $names, "$file does not render $form.");
+        }
+    }
+
+    /**
      * @return array<string, array{string, array<string, string>}>
      */
     public static function layoutForms(): array

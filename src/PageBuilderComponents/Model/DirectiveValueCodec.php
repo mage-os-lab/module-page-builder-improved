@@ -10,8 +10,10 @@ namespace MageOS\PageBuilderComponents\Model;
  * Core's directive tokenizer URL-decodes the whole parameter string before it splits it, and a `"` ends a
  * value. Unencoded, a `"` or a `%22` in a field would end the value and could set other parameters, such as
  * `type`. `{` and `}` would end the directive, and `<`, `>` and `&` would be read as HTML in the stored
- * content. Each of these characters, and the escape character `^` itself, becomes `^` and a digit, so an
- * encoded value contains none of them and decodes to exactly the original.
+ * content. Core's template filter reads a value that starts with `$` as a template variable and puts that
+ * variable's value, or `null`, in its place. Each of these characters, and the escape character `^` itself,
+ * becomes `^` and a digit or `a`, so an encoded value contains none of them and decodes to exactly the
+ * original.
  *
  * `view/adminhtml/web/js/utils/directive-value-codec.js` is the same codec for the stage. Change both together;
  * `Test/Unit/_files/codec-vectors.json` holds the cases both are tested against.
@@ -31,6 +33,7 @@ class DirectiveValueCodec
         '<' => '^7',
         '>' => '^8',
         '&' => '^9',
+        '$' => '^a',
     ];
 
     /**
@@ -47,6 +50,7 @@ class DirectiveValueCodec
         '^7' => '<',
         '^8' => '>',
         '^9' => '&',
+        '^a' => '$',
     ];
 
     /**
@@ -61,7 +65,7 @@ class DirectiveValueCodec
     }
 
     /**
-     * Decode a directive parameter. A `^` not followed by a digit is kept as it is.
+     * Decode a directive parameter. A `^` not followed by a digit or `a` is kept as it is.
      *
      * @param string $value
      * @return string
