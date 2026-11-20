@@ -105,6 +105,12 @@ Styles only, scoped to the stage wrapper the panel sits in (`.mageos-panel-host`
   shadow, and the element's name between the move handle and the actions.
 - **Hover outline** in the accent colour instead of grey.
 
+Removing an element that holds content asks first, in core's "Confirm Item Removal" dialog
+(`Magento_PageBuilder/js/modal/dismissible-confirm`, extended by `js/modal/dismissible-confirm-mixin.js`), from
+the stage's toolbar and from the tree alike. The dialog takes the focus on Cancel, and Escape closes it like
+Cancel, wherever the focus is; closing gives the focus back to the button that opened it. Core's other
+confirmations built on the same dialog (applying a template, the nesting warnings) behave the same way.
+
 ![Full screen](docs/screenshots/fullscreen-tree.png)
 
 ## Customising
@@ -122,6 +128,8 @@ this module's directory:
 ```bash
 # The panel's tree and mixin; needs Knockout (Magento's lib/web/knockoutjs, or `npm install knockout`)
 node Test/Js/panel.test.js path/to/magento/module-page-builder path/to/knockout.js
+# The confirmation dialog's mixin (focus, Escape)
+node Test/Js/dismissible-confirm.test.js
 
 # Screenshots and browser checks without a live admin (needs Docker): the backend theme's styles, core Page
 # Builder's admin LESS with the module's, the real templates and mixins next to a stand-in stage and edit form,

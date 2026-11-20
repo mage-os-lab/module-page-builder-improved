@@ -108,6 +108,7 @@
             "node src/PageBuilderComponents/Test/Js/preview.test.js",
             "node src/PageBuilderComponents/Test/Js/widget-directive.test.js vendor/magento/module-page-builder",
             "node src/PageBuilderUi/Test/Js/panel.test.js vendor/magento/module-page-builder",
+            "node src/PageBuilderUi/Test/Js/dismissible-confirm.test.js",
             "node src/PageBuilderLayout/Test/Js/converters.test.js"
         ],
         "test": [
