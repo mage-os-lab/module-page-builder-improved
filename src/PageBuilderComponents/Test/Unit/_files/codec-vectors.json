@@ -12,5 +12,8 @@
     {"decoded": "Line one\nLine two\ttab", "encoded": "Line one\nLine two\ttab"},
     {"decoded": "Ünïcødé — 東京 🚀", "encoded": "Ünïcødé — 東京 🚀"},
     {"decoded": "{\"type\":\"product\",\"product\":\"42\",\"setting\":true}", "encoded": "^3^1type^1:^1product^1,^1product^1:^142^1,^1setting^1:true^4"},
+    {"decoded": "$10 off everything", "encoded": "^a10 off everything"},
+    {"decoded": "$var, ${{var}} and $$", "encoded": "^avar, ^a^3^3var^4^4 and ^a^a"},
+    {"decoded": "^a and ^9 literally", "encoded": "^0a and ^09 literally"},
     {"decoded": "`backtick` and |pipe| stay", "encoded": "`backtick` and |pipe| stay"}
 ]
