@@ -1,8 +1,9 @@
 /**
  * Tests the reworked Page Builder panel: the "Current tree" (js/panel/tree.js) on a stage built from fake
  * content types, moved with core's real moveContentType, and the panel mixin (js/panel-mixin.js) on a stand-in
- * for core's Panel. Also which page "Save page" reopens Page Builder on (js/edit-with-page-builder.js), and
- * that core's templates the module copies (page-builder.html, panel.html) are still the ones it copied.
+ * for core's Panel. Also which page "Save page" reopens Page Builder on, and not after a failed save
+ * (js/edit-with-page-builder.js), and that core's templates the module copies (page-builder.html, panel.html)
+ * are still the ones it copied.
  *
  * Needs Knockout: Magento's lib/web/knockoutjs/knockout.js, or the knockout npm package.
  *
@@ -119,7 +120,14 @@ const triggered = [];
 const listeners = {};
 const storage = {};
 const session = {};
+// The selectors the page has a match for.
+const pageElements = [];
 const window = {
+    document: {
+        querySelector: function (selector) {
+            return pageElements.indexOf(selector) === -1 ? null : {};
+        }
+    },
     location: {hash: '', pathname: '/admin/cms/page/edit/page_id/5/key/abc/'},
     history: {
         replaceState: function () {}
@@ -654,6 +662,22 @@ assert.strictEqual(loadEditWithPageBuilder(cmsPage).isRequested(), false, 'flag 
 session['mageos-pagebuilder-reopen'] = '{not json';
 assert.strictEqual(loadEditWithPageBuilder(cmsPage).isRequested(), false, 'unreadable flag');
 delete session['mageos-pagebuilder-reopen'];
+
+// A save that failed on the server redirects back with an error message: show it, and forget the flag.
+loadEditWithPageBuilder(cmsPage).reopenAfterReload();
+pageElements.push('#messages .message-error');
+assert.strictEqual(loadEditWithPageBuilder(cmsPage).isRequested(), false, 'not over an error message');
+assert.ok(!('mageos-pagebuilder-reopen' in session), 'flag dropped on an error message');
+// The grids' action isn't a save's.
+assert.strictEqual(loadEditWithPageBuilder(cmsPage, '#edit-with-page-builder').isRequested(), true);
+pageElements.length = 0;
+
+// A save that failed its validation drops the flag: saving again with the page's own Save doesn't reopen it.
+editWithPageBuilder = loadEditWithPageBuilder(cmsPage);
+editWithPageBuilder.reopenAfterReload();
+editWithPageBuilder.cancelReopen();
+assert.ok(!('mageos-pagebuilder-reopen' in session), 'flag dropped on a failed validation');
+assert.strictEqual(loadEditWithPageBuilder(cmsPage).isRequested(), false, 'not after a failed validation');
 
 // The grids' action asks on any page.
 assert.strictEqual(loadEditWithPageBuilder('/admin/cms/block/edit/block_id/5/', '#edit-with-page-builder').isRequested(), true);

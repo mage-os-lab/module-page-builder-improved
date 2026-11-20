@@ -4,7 +4,9 @@
  * Asked by the grids' "Edit with Page Builder" action (the URL's #edit-with-page-builder), or by the header's
  * "Save page" (a flag in session storage, as saving reloads the page). The flag holds the page it was set on, and
  * only that page acts on it: a save that failed its validation doesn't reload, and the next page opened may be
- * another one. The page builder mixin opens the first stage that is ready, and consumes the request.
+ * another one. A save that failed on the server reloads the page with an error message: the flag is dropped then,
+ * so the editor doesn't open over the message. The page builder mixin opens the first stage that is ready, and
+ * consumes the request; it drops the flag itself when the form fails its validation.
  *
  * As a component (x-magento-init, layout cms_page_edit.xml), it opens the fieldset holding the content first:
  * Page Builder doesn't start inside a closed fieldset.
@@ -20,6 +22,8 @@ define([
         MAX_AGE = 60000,
         // The admin URL's actions for an entity's form: saving a new one reloads its edit page.
         FORM_ACTIONS = ['new', 'edit'],
+        // The admin's page messages, where a save that failed on the server says why.
+        ERROR_MESSAGE_SELECTOR = '#messages .message-error',
         consumed = false;
 
     /**
@@ -98,6 +102,28 @@ define([
     }
 
     /**
+     * Whether the page shows an error message, as it does when a save failed on the server and redirected back.
+     *
+     * @returns {Boolean}
+     */
+    function hasErrorMessage() {
+        var document = window.document;
+
+        return !!(document && document.querySelector && document.querySelector(ERROR_MESSAGE_SELECTOR));
+    }
+
+    /**
+     * Don't reopen Page Builder after all: the save it was asked for failed.
+     */
+    function cancelReopen() {
+        try {
+            window.sessionStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            // Storage blocked: there is no flag to drop.
+        }
+    }
+
+    /**
      * @returns {Boolean}
      */
     function isRequested() {
@@ -110,8 +136,17 @@ define([
             return true;
         }
         flag = readFlag();
+        if (!flag || Date.now() - flag.time >= MAX_AGE || !isSamePage(flag.path, window.location.pathname)) {
+            return false;
+        }
+        // Back on the page saved from with the error the save failed with: show the error, not the editor.
+        if (hasErrorMessage()) {
+            cancelReopen();
 
-        return !!flag && Date.now() - flag.time < MAX_AGE && isSamePage(flag.path, window.location.pathname);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -119,12 +154,7 @@ define([
      */
     function consume() {
         consumed = true;
-
-        try {
-            window.sessionStorage.removeItem(STORAGE_KEY);
-        } catch (e) {
-            // Storage blocked: there is no flag to drop.
-        }
+        cancelReopen();
 
         if (window.location.hash === '#' + FRAGMENT && window.history && window.history.replaceState) {
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -166,6 +196,7 @@ define([
     openFieldset.isRequested = isRequested;
     openFieldset.consume = consume;
     openFieldset.reopenAfterReload = reopenAfterReload;
+    openFieldset.cancelReopen = cancelReopen;
     openFieldset.isSamePage = isSamePage;
 
     return openFieldset;

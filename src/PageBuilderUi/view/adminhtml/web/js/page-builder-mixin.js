@@ -17,7 +17,13 @@ define([
     var SAVE_BUTTON_SELECTOR = 'button#save-button, button#save',
         // A form in a modal (an insertForm) has its Save in the modal's header, and the modal sits in the body.
         MODAL_SELECTOR = '.modal-inner-wrap',
-        MENU_EVENTS = '.mageosTemplateMenu';
+        MENU_EVENTS = '.mageosTemplateMenu',
+        STAGE_SELECTOR = '.pagebuilder-wysiwyg-wrapper',
+        // A UI form field's error, and a jQuery validation one.
+        FIELD_ERROR_SELECTOR = '.admin__field-error, label.mage-error',
+        MESSAGE_ERROR_SELECTOR = '.message-error',
+        // Long enough for a save's asynchronous validation to answer; a successful save has left the page by then.
+        SAVE_WATCH_TIME = 30000;
 
     /**
      * The Save of the form an element is in: the one in its nearest ancestor that holds one, so a Page Builder in
@@ -40,6 +46,73 @@ define([
         });
 
         return button;
+    }
+
+    /**
+     * The errors shown by the form a Save is for: its fields' and its messages', in the modal the Save is in (or
+     * on the page, out of any modal), and not in Page Builder's stages.
+     *
+     * @param {jQuery} button
+     * @param {String} selector
+     * @returns {Array}
+     */
+    function findErrors(button, selector) {
+        var modal = button.closest(MODAL_SELECTOR)[0] || null;
+
+        return $(modal || document.body).find(selector).filter(function () {
+            return ($(this).closest(MODAL_SELECTOR)[0] || null) === modal &&
+                !$(this).closest(STAGE_SELECTOR).length &&
+                $.trim($(this).text()) !== '';
+        }).toArray();
+    }
+
+    /**
+     * Call onError when the form a Save was just clicked for shows that saving failed: a field fails its
+     * validation (the form validates its fields again on each save), or an error message is added, as an
+     * asynchronous validation answers. Until the page unloads, or for SAVE_WATCH_TIME at most.
+     *
+     * @param {Element} headerButtons
+     * @param {jQuery} button
+     * @param {Function} onError
+     */
+    function watchSaveErrors(headerButtons, button, onError) {
+        // Error messages already on the page are from before this save.
+        var previous = findErrors(button, MESSAGE_ERROR_SELECTOR),
+            observer = null,
+            timer = null,
+            done = false;
+
+        /**
+         * @returns {Boolean}
+         */
+        function hasFailed() {
+            return findErrors(button, FIELD_ERROR_SELECTOR).length > 0 ||
+                _.difference(findErrors(button, MESSAGE_ERROR_SELECTOR), previous).length > 0;
+        }
+
+        function stop() {
+            done = true;
+            clearTimeout(timer);
+
+            if (observer) {
+                observer.disconnect();
+            }
+        }
+
+        function check() {
+            if (!done && hasFailed()) {
+                stop();
+                onError();
+            }
+        }
+
+        _.defer(check);
+
+        if (typeof window.MutationObserver === 'function') {
+            observer = new window.MutationObserver(_.debounce(check, 50));
+            observer.observe(document.body, {childList: true, subtree: true, characterData: true});
+        }
+        timer = setTimeout(stop, SAVE_WATCH_TIME);
     }
 
     return function (PageBuilder) {
@@ -169,18 +242,30 @@ define([
 
         /**
          * Click the page's own Save, so its validation and redirect apply. Saving reloads the page: come back to
-         * the full screen editor if that is where it was saved from.
+         * the full screen editor if that is where it was saved from. If the form shows an error instead, now or
+         * as an asynchronous validation answers, leave full screen so it can be seen, and don't reopen.
          */
         PageBuilder.prototype.savePage = function () {
-            var button = this.getPageSaveButton();
+            var self = this,
+                button = this.getPageSaveButton();
 
             if (!button.length) {
                 return;
             }
-            if (this.isFullScreen()) {
-                editWithPageBuilder.reopenAfterReload();
+            if (!this.isFullScreen()) {
+                button.trigger('click');
+
+                return;
             }
+            editWithPageBuilder.reopenAfterReload();
             button.trigger('click');
+            watchSaveErrors(this.headerButtons, button, function () {
+                editWithPageBuilder.cancelReopen();
+
+                if (self.isFullScreen()) {
+                    self.toggleFullScreen({animate: true});
+                }
+            });
         };
 
         return PageBuilder;
