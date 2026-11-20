@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace MageOS\PageBuilderComponents\Test\Unit\Model;
 
+use Magento\Framework\Filter\DirectiveProcessorInterface;
 use Magento\Framework\Filter\Template;
-use Magento\Framework\Filter\Template\DeferredDirectiveRegistry;
-use Magento\Framework\Filter\Template\DirectiveOutputNeutralizer;
-use Magento\Framework\Filter\Template\FilteringDepthMeter;
-use Magento\Framework\Filter\Template\SignatureProvider;
 use Magento\Framework\Filter\Template\Tokenizer\Parameter;
 use Magento\Framework\Filter\VariableResolverInterface;
 use Magento\Framework\Stdlib\StringUtils;
@@ -91,16 +88,7 @@ class DirectiveValueCodecTest extends TestCase
     {
         $resolver = $this->createMock(VariableResolverInterface::class);
         $resolver->method('resolve')->willReturn(null);
-        $filter = new class (
-            new StringUtils(),
-            [],
-            [],
-            $resolver,
-            $this->createMock(SignatureProvider::class),
-            $this->createMock(FilteringDepthMeter::class),
-            $this->createMock(DirectiveOutputNeutralizer::class),
-            $this->createMock(DeferredDirectiveRegistry::class)
-        ) extends Template {
+        $filter = new class (...$this->templateFilterArguments($resolver)) extends Template {
             /**
              * @param string $value
              * @return array<string, mixed>
@@ -117,6 +105,33 @@ class DirectiveValueCodecTest extends TestCase
 
         self::assertIsString($parameters['title']);
         self::assertSame($decoded, $this->codec->decode($parameters['title']));
+    }
+
+    /**
+     * Core's template filter constructor gains optional services between releases, and falls back to the object
+     * manager for any it is not given, and for its directive processors when the list is empty. Mock every
+     * service the installed release declares.
+     *
+     * @return list<mixed>
+     */
+    private function templateFilterArguments(VariableResolverInterface $resolver): array
+    {
+        $arguments = [
+            new StringUtils(),
+            [],
+            ['none' => $this->createMock(DirectiveProcessorInterface::class)],
+            $resolver,
+        ];
+        $parameters = (new \ReflectionMethod(Template::class, '__construct'))->getParameters();
+        foreach (\array_slice($parameters, \count($arguments)) as $parameter) {
+            $type = $parameter->getType();
+            $class = $type instanceof \ReflectionNamedType ? $type->getName() : '';
+            $arguments[] = class_exists($class) || interface_exists($class)
+                ? $this->createMock($class)
+                : $parameter->getDefaultValue();
+        }
+
+        return $arguments;
     }
 
     public function testUrlEncodedQuoteCannotSetAnotherParameter(): void
